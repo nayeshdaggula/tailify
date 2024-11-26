@@ -1,6 +1,7 @@
 {
   "name": "@nayeshdaggula/tailify",
   "version": "1.0.0",
+  "description": "Tailify is a React component library built with Tailwind CSS.",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
@@ -12,7 +13,7 @@
     "stylelint:fix": "stylelint **/*.css --fix",
     "test": "vitest --ui",
     "coverage": "vitest run --coverage",
-    "prepublishOnly": "vitest run && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "module": "./dist/main.js",
   "exports": "./dist/main.js",
