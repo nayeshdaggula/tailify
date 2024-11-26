@@ -1,6 +1,6 @@
 {
-  "name": "tailify",
-  "version": "0.0.0",
+  "name": "@nayeshdaggula/tailify",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
