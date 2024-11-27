@@ -52,5 +52,8 @@
     "vite-plugin-dts": "4.3.0",
     "vite-plugin-lib-inject-css": "2.1.1",
     "vitest": "2.1.5"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.22.0"
   }
 }
