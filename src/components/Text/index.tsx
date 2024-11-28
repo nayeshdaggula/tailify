@@ -61,6 +61,10 @@ function Text({
     colorStyles[color] = `text-[${color}]`;
   }
 
+  if (size.includes('px') || size.includes('rem')) {
+    sizeStyles[size] = `text-[${size}]`;
+  }
+
   const style = clsx(
     baseStyle,
     sizeStyles[size],
