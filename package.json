@@ -56,6 +56,9 @@
   "dependencies": {
     "@tabler/icons-react": "^3.22.0"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/nayeshdaggula/tailify"
