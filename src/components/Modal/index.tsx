@@ -3,18 +3,24 @@ import ReactDOM from 'react-dom';
 
 type ModalProps = {
     open: boolean; // Whether the modal is open
-    close: () => void; // Function to close the modal
+    onClose: () => void; // Function to close the modal
     children: React.ReactNode; // Modal content
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     fullscreen?: boolean; // Fullscreen modal
+    padding?: string; // Custom padding classes
+    margin?: string; // Custom margin classes
+    zIndex?: number; // Custom z-index for the modal
 };
 
 const Modal: React.FC<ModalProps> = ({
     open,
-    close,
+    onClose,
     children,
     size = 'md', // Default size
     fullscreen = false, // Default fullscreen
+    padding = 'p-4', // Default padding
+    margin = 'm-0', // Default margin
+    zIndex = 50, // Default z-index
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -62,25 +68,28 @@ const Modal: React.FC<ModalProps> = ({
         xl: 'w-[64rem] h-[10rem]',
     };
 
-    //size if contain % or vw 
+    // Adjust size if it contains % or vw
     if (size.includes('%') || size.includes('vw')) {
-        sizeClasses[size] = `w-[${size}] h-[${size}]`
+        sizeClasses[size] = `w-[${size}] h-[${size}]`;
     }
 
-    //check if fullscreen is true
+    // Check if fullscreen is true
     if (fullscreen) {
-        sizeClasses[size] = 'w-full h-full'
+        sizeClasses[size] = 'w-full h-full';
     }
 
     // Render modal into the portal
     return ReactDOM.createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div
+            className={`fixed inset-0 flex items-center justify-center bg-black/50 ${margin}`}
+            style={{ zIndex }}
+        >
             <div
-                className={`relative bg-white rounded-lg shadow-lg ${sizeClasses[size]}`}
+                className={`relative bg-white rounded-lg shadow-lg ${sizeClasses[size]} ${padding}`}
             >
                 {/* Close Button */}
                 <button
-                    onClick={close}
+                    onClick={onClose}
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
                 >
                     ✕

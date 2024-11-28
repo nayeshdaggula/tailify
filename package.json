@@ -1,6 +1,6 @@
 {
   "name": "@nayeshdaggula/tailify",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Tailify is a React component library built with Tailwind CSS.",
   "type": "module",
   "scripts": {
