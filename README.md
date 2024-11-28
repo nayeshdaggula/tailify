@@ -42,12 +42,6 @@ Install the library via npm:
 npm install @nayeshdaggula/tailify
 ```
 
-Or via yarn:
-
-```bash
-yarn add @nayeshdaggula/tailify
-```
-
 ## Usage Example
 
 Below is an example of how to use multiple components from Tailify in a single page:
