@@ -208,9 +208,6 @@ function Page() {
 export default Page;
 ```
 
-
-```
-
 ## Contributing
 
 Contributions are welcome! If you have a component you'd like to add or an improvement to suggest, feel free to open a pull request or file an issue on the GitHub repository.
