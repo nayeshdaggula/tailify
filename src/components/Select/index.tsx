@@ -56,8 +56,7 @@ const Select: React.FC<SelectProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
         if (
             dropdownRef.current &&
-            !dropdownRef.current.contains(event.target as Node) &&
-            !(event.target as HTMLElement).classList.contains('dropdown-option')
+            !dropdownRef.current.contains(event.target as Node)
         ) {
             setIsDropdownOpen(false);
         }
@@ -90,24 +89,36 @@ const Select: React.FC<SelectProps> = ({
                 <input
                     type="text"
                     placeholder={placeholder}
-                    value={searchable ? searchTerm : selectedLabel || ''}
+                    value={selectedLabel || ''}
                     onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
-                    onChange={(e) => searchable && setSearchTerm(e.target.value)}
-                    className={clsx("w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2", inputClassName)}
-                    readOnly={!searchable}
+                    readOnly
+                    className={clsx("w-full mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2", inputClassName)}
                 />
                 <div
                     className={clsx(
-                        'absolute left-0 right-0 z-10 bg-white border border-gray-300 rounded-md shadow-lg mt-1',
+                        'absolute left-0 px-[10px] py-[10px] right-0 z-10 bg-white border border-gray-300 rounded-md shadow-lg mt-1',
                         dropdownClassName,
                         { hidden: !isDropdownOpen }
                     )}
                 >
+                    {searchable && (
+                        <input
+                            type="text"
+                            placeholder="Search options"
+                            value={searchTerm}
+                            onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={clsx("w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2", inputClassName)}
+                        />
+                    )}
                     {filteredData.length > 0 ? (
                         filteredData.map((option) => (
                             <div
                                 key={option.value}
-                                onClick={() => !option.disabled && handleOptionClick(option.value, option.label)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    !option.disabled && handleOptionClick(option.value, option.label);
+                                }}
                                 className={clsx(
                                     'px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white dropdown-option',
                                     {
