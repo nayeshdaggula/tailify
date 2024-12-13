@@ -12,6 +12,8 @@ interface SelectProps {
     label?: string;
     placeholder?: string;
     data: SelectOption[];
+    value?: string; // Controlled value
+    defaultValue?: string; // Default value
     searchable?: boolean;
     padding?: string;
     margin?: string;
@@ -29,6 +31,8 @@ const Select: React.FC<SelectProps> = ({
     label,
     placeholder = 'Select an option',
     data,
+    value,
+    defaultValue,
     searchable = false,
     padding = 'p-2',
     margin = 'm-2',
@@ -46,6 +50,15 @@ const Select: React.FC<SelectProps> = ({
     const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Initialize selectedLabel from value or defaultValue
+        const initialValue = value || defaultValue;
+        if (initialValue) {
+            const initialOption = data.find((option) => option.value === initialValue);
+            setSelectedLabel(initialOption?.label || null);
+        }
+    }, [value, defaultValue, data]);
 
     const handleOptionClick = (value: string, label: string) => {
         setSelectedLabel(label);

@@ -74,21 +74,21 @@ const Loader: React.FC<LoaderProps> = ({
 
     let colorClass;
     if (type === 'dots') {
-        colorClass = colorBgClasses[color] || 'border-current'
+        colorClass = colorBgClasses[color] || 'border-current';
     } else if (type === 'bars') {
-        colorClass = colorBgClasses[color] || 'border-current'
+        colorClass = colorBgClasses[color] || 'border-current';
     } else {
-        colorClass = colorClasses[color] || 'border-current'
+        colorClass = colorClasses[color] || 'border-current';
     }
 
     let sizeClass;
     if (type === 'dots') {
-        sizeClass = sizeDotsClasses[size] || sizeDotsClasses['sm']
+        sizeClass = sizeDotsClasses[size] || sizeDotsClasses['sm'];
     } else if (type === 'bars') {
-        sizeClass = sizeBarsClasses[size] || sizeBarsClasses['sm']
+        sizeClass = sizeBarsClasses[size] || sizeBarsClasses['sm'];
     } else {
-        sizeClass = sizeOvalClasses[size] || sizeOvalClasses['sm']
-    }   
+        sizeClass = sizeOvalClasses[size] || sizeOvalClasses['sm'];
+    }
 
     if (type === 'oval') {
         return (
@@ -104,7 +104,6 @@ const Loader: React.FC<LoaderProps> = ({
             ></div>
         );
     }
-
 
     if (type === 'dots') {
         return (
@@ -149,14 +148,5 @@ const Loader: React.FC<LoaderProps> = ({
 
     return null;
 };
-
-// Add keyframes for wave animation
-const style = document.createElement('style');
-style.textContent = `
-@keyframes wave {
-    0%, 100% { transform: scaleY(0.4); }
-    50% { transform: scaleY(1); }
-}`;
-document.head.appendChild(style);
 
 export { Loader };

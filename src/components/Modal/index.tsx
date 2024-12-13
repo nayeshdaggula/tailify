@@ -10,6 +10,7 @@ type ModalProps = {
     padding?: string; // Custom padding classes
     margin?: string; // Custom margin classes
     zIndex?: number; // Custom z-index for the modal
+    withCloseButton?: boolean; // Show or hide the close button
 };
 
 const Modal: React.FC<ModalProps> = ({
@@ -21,6 +22,7 @@ const Modal: React.FC<ModalProps> = ({
     padding = 'p-4', // Default padding
     margin = 'm-0', // Default margin
     zIndex = 50, // Default z-index
+    withCloseButton = true, // Default to showing the close button
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -61,16 +63,16 @@ const Modal: React.FC<ModalProps> = ({
 
     // Modal width classes
     const sizeClasses = {
-        xs: 'w-[20rem] h-[10rem]',
-        sm: 'w-[24rem] h-[10rem]',
-        md: 'w-[32rem] h-[10rem]',
-        lg: 'w-[48rem] h-[10rem]',
-        xl: 'w-[64rem] h-[10rem]',
+        xs: 'w-[20rem] min-h-[10rem]',
+        sm: 'w-[24rem] min-h-[10rem]',
+        md: 'w-[32rem] min-h-[10rem]',
+        lg: 'w-[48rem] min-h-[10rem]',
+        xl: 'w-[64rem] min-h-[10rem]',
     };
 
     // Adjust size if it contains % or vw
     if (size.includes('%') || size.includes('vw')) {
-        sizeClasses[size] = `w-[${size}] h-[${size}]`;
+        sizeClasses[size] = `w-[${size}] min-h-[${size}]`;
     }
 
     // Check if fullscreen is true
@@ -87,13 +89,15 @@ const Modal: React.FC<ModalProps> = ({
             <div
                 className={`relative bg-white rounded-lg shadow-lg ${sizeClasses[size]} ${padding}`}
             >
-                {/* Close Button */}
-                <button
-                    onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-                >
-                    ✕
-                </button>
+                {/* Conditionally render the close button */}
+                {withCloseButton && (
+                    <button
+                        onClick={onClose}
+                        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                    >
+                        ✕
+                    </button>
+                )}
                 {children}
             </div>
         </div>,
