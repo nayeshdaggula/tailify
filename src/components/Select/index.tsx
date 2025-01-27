@@ -1,155 +1,131 @@
 import React, { useState, useEffect, useRef } from 'react';
-import clsx from 'clsx';
 
-// Define types for Select component props
-interface SelectOption {
-    value: string;
-    label: string;
-    disabled?: boolean;
+interface Option {
+  value: string;
+  label: string;
 }
 
-interface SelectProps {
-    label?: string;
-    placeholder?: string;
-    data: SelectOption[];
-    value?: string; // Controlled value
-    defaultValue?: string; // Default value
-    searchable?: boolean;
-    padding?: string;
-    margin?: string;
-    description?: string;
-    onChange?: (value: string | null) => void;
-    className?: string;
-    labelClassName?: string;
-    descriptionClassName?: string;
-    dropdownClassName?: string;
-    inputClassName?: string;
-    withAsterisk?: boolean;
+interface SingleSelectProps {
+  options: Option[];
+  placeholder?: string;
+  label?: string;
+  labelClass?: string;
+  placeholderClass?: string;
+  clearable?: boolean;
+  searchable?: boolean;
+  value?: string | null; // Controlled value
+  defaultValue?: string | null; // Uncontrolled default value
+  onChange?: (value: string | null) => void; // onChange callback
 }
 
-const Select: React.FC<SelectProps> = ({
-    label,
-    placeholder = 'Select an option',
-    data,
-    value,
-    defaultValue,
-    searchable = false,
-    padding = 'p-2',
-    margin = 'm-2',
-    description,
-    onChange,
-    className,
-    labelClassName,
-    descriptionClassName,
-    dropdownClassName,
-    inputClassName,
-    withAsterisk = false,
-    ...props
+const Select: React.FC<SingleSelectProps> = ({
+  options = [],
+  placeholder = 'Select...',
+  label,
+  labelClass = '',
+  placeholderClass = '',
+  clearable = false,
+  searchable = false,
+  value = null, // Controlled value
+  defaultValue = null, // Default value (initial)
+  onChange,
 }) => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(defaultValue);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        // Initialize selectedLabel from value or defaultValue
-        const initialValue = value || defaultValue;
-        if (initialValue) {
-            const initialOption = data.find((option) => option.value === initialValue);
-            setSelectedLabel(initialOption?.label || null);
-        }
-    }, [value, defaultValue, data]);
+  const handleToggleDropdown = () => setIsOpen((prev) => !prev);
 
-    const handleOptionClick = (value: string, label: string) => {
-        setSelectedLabel(label);
-        setIsDropdownOpen(false);
-        if (onChange) onChange(value);
-    };
+  const handleSelectOption = (value: string) => {
+    if (onChange) {
+      onChange(value); // Notify parent with the selected value
+    } else {
+      setSelectedOption(value); // Update internal state if no `onChange` prop is provided
+    }
+    setIsOpen(false); // Close dropdown after selection
+  };
 
+  const handleClearSelection = () => {
+    if (onChange) {
+      onChange(null); // Notify parent to clear selection
+    } else {
+      setSelectedOption(null); // Clear internal selection
+    }
+  };
+
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-        if (
-            dropdownRef.current &&
-            !dropdownRef.current.contains(event.target as Node)
-        ) {
-            setIsDropdownOpen(false);
-        }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false); // Close dropdown if click is outside
+      }
     };
 
-    useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
-    const filteredData = searchable
-        ? data.filter((option) =>
-            option.label.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        : data;
+  // Use `value` if it's provided (controlled) or fall back to `selectedOption` (internal state)
+  const controlledSelection = value !== undefined ? value : selectedOption;
 
-    return (
-        <div className={clsx('relative', padding, margin, className)} ref={dropdownRef} {...props}>
-            {label && (
-                <label className={clsx('block mb-1 font-bold text-black', labelClassName)}>
-                    {label}{withAsterisk && <span className="text-red-500"> *</span>}
-                </label>
-            )}
-            {description && (
-                <p className={clsx('text-sm text-gray-500 mb-1', descriptionClassName)}>{description}</p>
-            )}
-            <div className="relative">
-                <input
-                    type="text"
-                    placeholder={placeholder}
-                    value={selectedLabel || ''}
-                    onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
-                    readOnly
-                    className={clsx("w-full mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2", inputClassName)}
-                />
-                <div
-                    className={clsx(
-                        'absolute left-0 px-[10px] py-[10px] right-0 z-10 bg-white border border-gray-300 rounded-md shadow-lg mt-1',
-                        dropdownClassName,
-                        { hidden: !isDropdownOpen }
-                    )}
-                >
-                    {searchable && (
-                        <input
-                            type="text"
-                            placeholder="Search options"
-                            value={searchTerm}
-                            onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className={clsx("w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2", inputClassName)}
-                        />
-                    )}
-                    {filteredData.length > 0 ? (
-                        filteredData.map((option) => (
-                            <div
-                                key={option.value}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    !option.disabled && handleOptionClick(option.value, option.label);
-                                }}
-                                className={clsx(
-                                    'px-4 py-2 cursor-pointer hover:bg-indigo-500 hover:text-white dropdown-option',
-                                    {
-                                        'text-gray-400 cursor-not-allowed': option.disabled,
-                                        'text-gray-900': !option.disabled,
-                                    }
-                                )}
-                            >
-                                {option.label}
-                            </div>
-                        ))
-                    ) : (
-                        <div className="px-4 py-2 text-gray-500">No options found</div>
-                    )}
-                </div>
+  return (
+    <div className="relative w-full" ref={dropdownRef}>
+      {label && <label className={`block text-base font-semibold text-black ${labelClass}`}>{label}</label>}
+      <div
+        onClick={handleToggleDropdown}
+        className="cursor-pointer p-2 border rounded-md shadow-sm bg-white flex"
+      >
+        <span className="text-gray-600">
+          {controlledSelection
+            ? options.find((option) => option.value === controlledSelection)?.label
+            : <p className={`py-[1.3px] ${placeholderClass}`}>{placeholder}</p>}
+        </span>
+        {clearable && controlledSelection && (
+          <button
+            onClick={handleClearSelection}
+            className="ml-auto text-gray-400 hover:text-black cursor-pointer"
+            aria-label="Clear selection"
+          >
+            &times;
+          </button>
+        )}
+      </div>
+
+      {isOpen && (
+        <div className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+          {searchable && (
+            <div className="p-2">
+              <input
+                type="text"
+                className="w-full p-2 border rounded-md"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus={isOpen}
+              />
             </div>
+          )}
+          <ul className="max-h-48 overflow-y-auto">
+            {filteredOptions.map((option) => (
+              <li
+                key={option.value}
+                className={`p-2 cursor-pointer hover:bg-gray-100 ${controlledSelection === option.value ? 'bg-gray-100' : 'bg-white'}`}
+                onClick={() => handleSelectOption(option.value)}
+              >
+                {option.label}
+              </li>
+            ))}
+          </ul>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export { Select };

@@ -11,6 +11,7 @@ type ModalProps = {
     margin?: string; // Custom margin classes
     zIndex?: number; // Custom z-index for the modal
     withCloseButton?: boolean; // Show or hide the close button
+    containerClassName?: string; // Custom class for the modal container
 };
 
 const Modal: React.FC<ModalProps> = ({
@@ -23,6 +24,7 @@ const Modal: React.FC<ModalProps> = ({
     margin = 'm-0', // Default margin
     zIndex = 50, // Default z-index
     withCloseButton = true, // Default to showing the close button
+    containerClassName,
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -63,11 +65,11 @@ const Modal: React.FC<ModalProps> = ({
 
     // Modal width classes
     const sizeClasses = {
-        xs: 'w-[20rem] min-h-[10rem]',
-        sm: 'w-[24rem] min-h-[10rem]',
-        md: 'w-[32rem] min-h-[10rem]',
-        lg: 'w-[48rem] min-h-[10rem]',
-        xl: 'w-[64rem] min-h-[10rem]',
+        xs: 'w-[320px] min-h-[10rem]',
+        sm: 'w-[380px] min-h-[10rem]',
+        md: 'w-[440px] min-h-[10rem]',
+        lg: 'w-[620px] min-h-[10rem]',
+        xl: 'w-[780px] min-h-[10rem]',
     };
 
     // Adjust size if it contains % or vw
@@ -87,7 +89,7 @@ const Modal: React.FC<ModalProps> = ({
             style={{ zIndex }}
         >
             <div
-                className={`relative bg-white rounded-lg shadow-lg ${sizeClasses[size]} ${padding}`}
+                className={`relative bg-white rounded-lg shadow-lg ${sizeClasses[size]} ${padding} ${containerClassName}`}
             >
                 {/* Conditionally render the close button */}
                 {withCloseButton && (
