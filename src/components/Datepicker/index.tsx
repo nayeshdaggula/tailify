@@ -12,41 +12,53 @@ interface CustomDatePickerProps {
 const DatePicker: React.FC<CustomDatePickerProps> = ({
   value,
   onChange,
-  placeholder = 'Select a date',
+  placeholder = 'Select a year',
   clearable = true,
-  dateFormat = 'YYYY/MM/DD',
+  dateFormat = 'YYYY',
 }) => {
-  const [date, setDate] = useState<Date | null>(value);
+  const [year, setYear] = useState<number | null>(value ? dayjs(value).year() : null);
 
-  // Format the date based on the dateFormat prop
-  const formatDate = (date: Date | null) => {
-    return date ? dayjs(date).format(dateFormat) : '';
+  // Format the year based on the dateFormat prop
+  const formatDate = (year: number | null) => {
+    return year ? dayjs().year(year).format(dateFormat) : '';
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value ? new Date(e.target.value) : null;
-    setDate(selectedDate);
-    onChange(selectedDate);
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedYear = e.target.value ? parseInt(e.target.value, 10) : null;
+    setYear(selectedYear);
+    onChange(selectedYear ? dayjs().year(selectedYear).toDate() : null);
   };
 
   const handleClear = () => {
-    setDate(null);
+    setYear(null);
     onChange(null);
   };
 
+  const currentYear = dayjs().year();
+  const yearsArray = Array.from({ length: 100 }, (_, i) => currentYear - i);
+
   return (
     <div className="relative w-full">
-      <input
-        type="date"
-        value={date ? dayjs(date).format('YYYY-MM-DD') : ''} // Format to YYYY-MM-DD for the input
-        onChange={handleDateChange}
-        placeholder={placeholder}
+      <select
+        value={year ?? ''}
+        onChange={handleYearChange}
         className="w-full p-2 border rounded-md shadow-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      >
+        <option value="" disabled>
+          {placeholder}
+        </option>
+        {yearsArray.map((yearOption) => (
+          <option key={yearOption} value={yearOption}>
+            {yearOption}
+          </option>
+        ))}
+      </select>
 
-      <div className="mt-2 text-gray-700">{date && `Selected Date: ${formatDate(date)}`}</div>
+      <div className="mt-2 text-gray-700">
+        {year && `Selected Year: ${formatDate(year)}`}
+      </div>
 
-      {clearable && date && (
+      {clearable && year && (
         <button
           onClick={handleClear}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
