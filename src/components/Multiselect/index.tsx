@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 interface Option {
     value: string;
     label: string;
+    group?: string; // For grouped options
+    disabled?: boolean; // For disabled options
 }
 
 interface MultiselectProps {
@@ -13,6 +15,19 @@ interface MultiselectProps {
     labelClass?: string;
     placeholderClass?: string;
     clearable?: boolean;
+    disabled?: boolean;
+    error?: string;
+    maxSelectedValues?: number;
+    dropdownHeight?: string;
+    dropdownWidth?: string;
+    noOptionsMessage?: string;
+    loading?: boolean;
+    onSearchChange?: (query: string) => void;
+    renderSelected?: (selected: Option[]) => React.ReactNode;
+    renderOption?: (option: Option) => React.ReactNode;
+    filter?: (option: Option, query: string) => boolean;
+    value?: string[]; // External value prop
+    onChange?: (selectedValues: string[]) => void; // External onChange prop
 }
 
 const Multiselect: React.FC<MultiselectProps> = ({
@@ -23,32 +38,70 @@ const Multiselect: React.FC<MultiselectProps> = ({
     labelClass = '',
     placeholderClass = '',
     clearable = false,
+    disabled = false,
+    error = '',
+    maxSelectedValues,
+    dropdownHeight = 'max-h-60',
+    dropdownWidth = 'w-full',
+    noOptionsMessage = 'No options found',
+    loading = false,
+    onSearchChange,
+    renderSelected,
+    renderOption,
+    filter,
+    value = [], // Default value
+    onChange, // onChange handler
 }) => {
-    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+    const [selectedOptions, setSelectedOptions] = useState<string[]>(value);
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const handleToggleDropdown = () => setIsOpen((prev) => !prev);
+    // Sync internal state with external value prop
+    useEffect(() => {
+        setSelectedOptions(value);
+    }, [value]);
+
+    const handleToggleDropdown = () => {
+        if (!disabled) setIsOpen((prev) => !prev);
+    };
 
     const handleSelectOption = (value: string) => {
+        if (maxSelectedValues && selectedOptions.length >= maxSelectedValues) return;
         const newSelection = selectedOptions.includes(value)
             ? selectedOptions.filter((item) => item !== value)
             : [...selectedOptions, value];
         setSelectedOptions(newSelection);
+        onChange?.(newSelection); // Notify parent of change
     };
 
     const handleRemoveSelected = (value: string) => {
-        setSelectedOptions(selectedOptions.filter((item) => item !== value));
+        const newSelection = selectedOptions.filter((item) => item !== value);
+        setSelectedOptions(newSelection);
+        onChange?.(newSelection); // Notify parent of change
     };
 
     const handleClearSelection = () => {
         setSelectedOptions([]);
+        onChange?.([]); // Notify parent of change
     };
 
-    const filteredOptions = options.filter((option) =>
-        option.label.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredOptions = filter
+        ? options.filter((option) => filter(option, searchQuery))
+        : options.filter((option) =>
+              option.label.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+
+    const groupedOptions = filteredOptions.reduce((acc, option) => {
+        if (option.group) {
+            if (!acc[option.group]) acc[option.group] = [];
+            acc[option.group].push(option);
+        } else {
+            if (!acc['ungrouped']) acc['ungrouped'] = [];
+            acc['ungrouped'].push(option);
+        }
+        return acc;
+    }, {} as Record<string, Option[]>);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -65,39 +118,57 @@ const Multiselect: React.FC<MultiselectProps> = ({
 
     return (
         <div className="relative w-full" ref={dropdownRef}>
-            <label className={`block text-sm font-bold text-black ${labelClass}`}>{label}</label>
+            {label && (
+                <label className={`block text-sm font-bold text-black ${labelClass}`}>
+                    {label}
+                </label>
+            )}
             <div
                 onClick={handleToggleDropdown}
-                className="cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className={`cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 ${
+                    disabled
+                        ? 'bg-gray-100 cursor-not-allowed'
+                        : 'bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-blue-500'
+                } ${error ? 'border-red-500' : 'border-gray-300'}`}
             >
                 <span className="text-gray-600">
                     {selectedOptions.length ? (
-                        <div className="flex flex-wrap gap-2">
-                            {selectedOptions.map((value) => {
-                                const selectedOption = options.find((opt) => opt.value === value);
-                                return (
-                                    selectedOption && (
-                                        <div
-                                            key={value}
-                                            className="flex items-center px-2 text-black border-black rounded-full border-[1px] !cursor-default"
-                                        >
-                                            <span className='text-[13px]'>{selectedOption.label}</span>
-                                            <button
-                                                onClick={() => handleRemoveSelected(value)}
-                                                className="ml-2 text-black cursor-pointer"
+                        renderSelected ? (
+                            renderSelected(
+                                selectedOptions.map((value) =>
+                                    options.find((opt) => opt.value === value)
+                                ) as Option[]
+                            )
+                        ) : (
+                            <div className="flex flex-wrap gap-2">
+                                {selectedOptions.map((value) => {
+                                    const selectedOption = options.find((opt) => opt.value === value);
+                                    return (
+                                        selectedOption && (
+                                            <div
+                                                key={value}
+                                                className="flex items-center px-2 text-black border-black rounded-full border-[1px] !cursor-default"
                                             >
-                                                &times;
-                                            </button>
-                                        </div>
-                                    )
-                                );
-                            })}
-                        </div>
+                                                <span className="text-[13px]">
+                                                    {selectedOption.label}
+                                                </span>
+                                                <button
+                                                    onClick={() => handleRemoveSelected(value)}
+                                                    className="ml-2 text-black cursor-pointer"
+                                                >
+                                                    &times;
+                                                </button>
+                                            </div>
+                                        )
+                                    );
+                                })}
+                            </div>
+                        )
                     ) : (
                         <p className={`py-[1.3px] ${placeholderClass}`}>{placeholder}</p>
                     )}
                 </span>
-                {(clearable && selectedOptions.length>0) && (
+                {clearable && selectedOptions.length > 0 && (
                     <button
                         onClick={handleClearSelection}
                         className="ml-auto text-gray-400 hover:text-black cursor-pointer"
@@ -108,8 +179,12 @@ const Multiselect: React.FC<MultiselectProps> = ({
                 )}
             </div>
 
-            {isOpen && (
-                <div className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+
+            {isOpen && !disabled && (
+                <div
+                    className={`absolute left-0 ${dropdownWidth} mt-1 bg-white border rounded-md shadow-lg z-10 ${dropdownHeight} overflow-y-auto`}
+                >
                     {searchable && (
                         <div className="p-2">
                             <input
@@ -117,22 +192,46 @@ const Multiselect: React.FC<MultiselectProps> = ({
                                 className="w-full p-2 border rounded-md"
                                 placeholder="Search..."
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    onSearchChange?.(e.target.value);
+                                }}
                                 autoFocus={isOpen}
                             />
                         </div>
                     )}
-                    <ul className="max-h-48 overflow-y-auto">
-                        {filteredOptions.map((option) => (
-                            <li
-                                key={option.value}
-                                className={`p-2 cursor-pointer hover:bg-gray-100 ${selectedOptions.includes(option.value) ? 'bg-gray-100' : 'bg-white'}`}
-                                onClick={() => handleSelectOption(option.value)}
-                            >
-                                {option.label}
-                            </li>
-                        ))}
-                    </ul>
+                    {loading ? (
+                        <div className="p-2 text-center text-gray-500">Loading...</div>
+                    ) : filteredOptions.length === 0 ? (
+                        <div className="p-2 text-center text-gray-500">{noOptionsMessage}</div>
+                    ) : (
+                        <ul className="max-h-48 overflow-y-auto">
+                            {Object.entries(groupedOptions).map(([group, options]) => (
+                                <li key={group}>
+                                    {group !== 'ungrouped' && (
+                                        <div className="p-2 text-sm font-bold text-gray-500 bg-gray-100">
+                                            {group}
+                                        </div>
+                                    )}
+                                    {options.map((option) => (
+                                        <p
+                                            key={option.value}
+                                            className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                                                selectedOptions.includes(option.value)
+                                                    ? 'bg-gray-100'
+                                                    : 'bg-white'
+                                            } ${option.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            onClick={() =>
+                                                !option.disabled && handleSelectOption(option.value)
+                                            }
+                                        >
+                                            {renderOption ? renderOption(option) : option.label}
+                                        </p>
+                                    ))}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             )}
         </div>
