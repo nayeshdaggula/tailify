@@ -5,6 +5,7 @@ interface FileUploadProps {
     accept?: string;
     multiple?: boolean;
     label?: string;
+    containerClass?: string;
 }
 
 const UploadFile: React.FC<FileUploadProps> = ({
@@ -12,6 +13,7 @@ const UploadFile: React.FC<FileUploadProps> = ({
     accept = '*',
     multiple = false,
     label = 'Upload File',
+    containerClass = {},
 }) => {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -27,17 +29,15 @@ const UploadFile: React.FC<FileUploadProps> = ({
     return (
         <div>
             <label
-                style={{
-                    display: 'inline-block',
-                    padding: '10px 20px',
-                    backgroundColor: '#007bff',
-                    color: '#fff',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    textAlign: 'center',
-                }}
+                className={`inline-block px-[20px] py-[10px] text-black border border-black border-dashed rounded-md cursor-pointer text-center w-full ${containerClass}`}
             >
-                {label}
+                {selectedFiles.length === 1 ? (
+                    selectedFiles.map((file, index) => (
+                        <p key={index}>{file.name}</p>
+                    ))
+                ) :
+                    label
+                }
                 <input
                     type="file"
                     accept={accept}
@@ -46,9 +46,8 @@ const UploadFile: React.FC<FileUploadProps> = ({
                     style={{ display: 'none' }}
                 />
             </label>
-            {selectedFiles.length > 0 && (
+            {selectedFiles.length > 1 && (
                 <div style={{ marginTop: '10px' }}>
-                    <strong>Selected Files:</strong>
                     <ul>
                         {selectedFiles.map((file, index) => (
                             <li key={index}>{file.name}</li>
