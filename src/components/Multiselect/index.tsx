@@ -65,10 +65,10 @@ const Multiselect: React.FC<MultiselectProps> = ({
 
     return (
         <div className="relative w-full" ref={dropdownRef}>
-            <label className={`block text-base font-semibold text-black ${labelClass}`}>{label}</label>
+            <label className={`block text-sm font-bold text-black ${labelClass}`}>{label}</label>
             <div
                 onClick={handleToggleDropdown}
-                className="cursor-pointer p-2 border rounded-md shadow-sm bg-white flex"
+                className="cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
                 <span className="text-gray-600">
                     {selectedOptions.length ? (

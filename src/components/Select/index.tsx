@@ -76,10 +76,10 @@ const Select: React.FC<SingleSelectProps> = ({
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
-      {label && <label className={`block text-base font-semibold text-black ${labelClass}`}>{label}</label>}
+      {label && <label className={`block text-sm font-bold text-black ${labelClass}`}>{label}</label>}
       <div
         onClick={handleToggleDropdown}
-        className="cursor-pointer p-2 border rounded-md shadow-sm bg-white flex"
+        className="cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
       >
         <span className="text-gray-600">
           {controlledSelection
@@ -103,7 +103,7 @@ const Select: React.FC<SingleSelectProps> = ({
             <div className="p-2">
               <input
                 type="text"
-                className="w-full p-2 border rounded-md"
+                className="w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

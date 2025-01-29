@@ -13,6 +13,7 @@ type TextInputProps = {
   withAsterisk?: boolean;
   error?: string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>; // Additional props for the input element
+  rightIcon?: React.ReactNode;
 };
 
 const Textinput: React.FC<TextInputProps> = ({
@@ -27,6 +28,7 @@ const Textinput: React.FC<TextInputProps> = ({
   withAsterisk = false,
   error,
   inputProps,
+  rightIcon = null,
 }) => {
   return (
     <div className="space-y-2">
@@ -51,21 +53,29 @@ const Textinput: React.FC<TextInputProps> = ({
           {description}
         </p>
       )}
-      <input
-        {...inputProps} // Spread additional props onto the input element
-        type="text"
-        className={clsx(
-          "w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50",
-          {
-            "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error,
-            "border-red-500 focus:ring-red-500": !!error,
-          },
-          inputClassName
+      <div className="relative">
+        <input
+          {...inputProps} // Spread additional props onto the input element
+          type="text"
+          className={clsx(
+            "w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50",
+            {
+              "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error,
+              "border-red-500 focus:ring-red-500": !!error,
+            },
+            inputClassName,
+            rightIcon && "pr-10"
+          )}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+        />
+        {rightIcon && (
+          <div className="absolute right-3 flex items-center pointer-events-none top-0 bottom-0">
+            {rightIcon}
+          </div>
         )}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-      />
+      </div>
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
