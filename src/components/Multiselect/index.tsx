@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './Multiselect.css';
 
 interface Option {
     value: string;
     label: string;
-    group?: string; // For grouped options
-    disabled?: boolean; // For disabled options
+    group?: string;
+    disabled?: boolean;
 }
 
 interface MultiselectProps {
@@ -26,8 +27,8 @@ interface MultiselectProps {
     renderSelected?: (selected: Option[]) => React.ReactNode;
     renderOption?: (option: Option) => React.ReactNode;
     filter?: (option: Option, query: string) => boolean;
-    value?: string[]; // External value prop
-    onChange?: (selectedValues: string[]) => void; // External onChange prop
+    value?: string[];
+    onChange?: (selectedValues: string[]) => void;
 }
 
 const Multiselect: React.FC<MultiselectProps> = ({
@@ -52,14 +53,13 @@ const Multiselect: React.FC<MultiselectProps> = ({
     value = [], // Default value
     onChange, // onChange handler
 }) => {
-    const [selectedOptions, setSelectedOptions] = useState<string[]>(value);
+    const [selectedOptions, setSelectedOptions] = useState<string[]>(value || []);
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Sync internal state with external value prop
     useEffect(() => {
-        setSelectedOptions(value);
+        setSelectedOptions(value || []);
     }, [value]);
 
     const handleToggleDropdown = () => {
@@ -131,8 +131,8 @@ const Multiselect: React.FC<MultiselectProps> = ({
                         : 'bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-blue-500'
                 } ${error ? 'border-red-500' : 'border-gray-300'}`}
             >
-                <span className="text-gray-600">
-                    {selectedOptions.length ? (
+                <span className="text-gray-600 flex-1 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                    {selectedOptions && selectedOptions.length ? (
                         renderSelected ? (
                             renderSelected(
                                 selectedOptions.map((value) =>
@@ -140,7 +140,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
                                 ) as Option[]
                             )
                         ) : (
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-nowrap gap-2">
                                 {selectedOptions.map((value) => {
                                     const selectedOption = options.find((opt) => opt.value === value);
                                     return (
