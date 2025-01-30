@@ -9,7 +9,7 @@ interface Option {
 }
 
 interface MultiselectProps {
-    options: Option[];
+    data: Option[];
     placeholder?: string;
     searchable?: boolean;
     label?: string;
@@ -29,10 +29,11 @@ interface MultiselectProps {
     filter?: (option: Option, query: string) => boolean;
     value?: string[];
     onChange?: (selectedValues: string[]) => void;
+    contailnerClass?: string;
 }
 
 const Multiselect: React.FC<MultiselectProps> = ({
-    options = [],
+    data = [],
     placeholder = 'Select...',
     searchable = false,
     label,
@@ -52,6 +53,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
     filter,
     value = [], // Default value
     onChange, // onChange handler
+    contailnerClass = '',
 }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>(value || []);
     const [isOpen, setIsOpen] = useState(false);
@@ -87,8 +89,8 @@ const Multiselect: React.FC<MultiselectProps> = ({
     };
 
     const filteredOptions = filter
-        ? options.filter((option) => filter(option, searchQuery))
-        : options.filter((option) =>
+        ? data.filter((option) => filter(option, searchQuery))
+        : data.filter((option) =>
               option.label.toLowerCase().includes(searchQuery.toLowerCase())
           );
 
@@ -129,20 +131,20 @@ const Multiselect: React.FC<MultiselectProps> = ({
                     disabled
                         ? 'bg-gray-100 cursor-not-allowed'
                         : 'bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-blue-500'
-                } ${error ? 'border-red-500' : 'border-gray-300'}`}
+                } ${error ? 'border-red-500' : 'border-gray-300'} ${contailnerClass}`}
             >
                 <span className="text-gray-600 flex-1 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
                     {selectedOptions && selectedOptions.length ? (
                         renderSelected ? (
                             renderSelected(
                                 selectedOptions.map((value) =>
-                                    options.find((opt) => opt.value === value)
+                                    data.find((opt) => opt.value === value)
                                 ) as Option[]
                             )
                         ) : (
                             <div className="flex flex-nowrap gap-2">
                                 {selectedOptions.map((value) => {
-                                    const selectedOption = options.find((opt) => opt.value === value);
+                                    const selectedOption = data.find((opt) => opt.value === value);
                                     return (
                                         selectedOption && (
                                             <div

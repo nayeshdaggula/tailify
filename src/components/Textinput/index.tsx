@@ -14,6 +14,7 @@ type TextInputProps = {
   error?: string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>; // Additional props for the input element
   rightIcon?: React.ReactNode;
+  type?: string;
 };
 
 const Textinput: React.FC<TextInputProps> = ({
@@ -29,6 +30,7 @@ const Textinput: React.FC<TextInputProps> = ({
   error,
   inputProps,
   rightIcon = null,
+  type = "text",
 }) => {
   return (
     <div className="space-y-2">
@@ -56,7 +58,7 @@ const Textinput: React.FC<TextInputProps> = ({
       <div className="relative">
         <input
           {...inputProps} // Spread additional props onto the input element
-          type="text"
+          type={type}
           className={clsx(
             "w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50",
             {

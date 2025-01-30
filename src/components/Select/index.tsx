@@ -6,7 +6,7 @@ interface Option {
 }
 
 interface SingleSelectProps {
-  options: Option[];
+  data: Option[];
   placeholder?: string;
   label?: string;
   labelClass?: string;
@@ -19,7 +19,7 @@ interface SingleSelectProps {
 }
 
 const Select: React.FC<SingleSelectProps> = ({
-  options = [],
+  data = [],
   placeholder = 'Select...',
   label,
   labelClass = '',
@@ -54,7 +54,7 @@ const Select: React.FC<SingleSelectProps> = ({
     }
   };
 
-  const filteredOptions = options.filter((option) =>
+  const filteredOptions = data.filter((option) =>
     option.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -83,7 +83,7 @@ const Select: React.FC<SingleSelectProps> = ({
       >
         <span className="text-gray-600">
           {controlledSelection
-            ? options.find((option) => option.value === controlledSelection)?.label
+            ? data.find((option) => option.value === controlledSelection)?.label
             : <p className={`py-[1.3px] ${placeholderClass}`}>{placeholder}</p>}
         </span>
         {clearable && controlledSelection && (
