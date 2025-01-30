@@ -9,7 +9,7 @@ interface Option {
 }
 
 interface MultiselectProps {
-    options: Option[];
+    data: Option[];
     placeholder?: string;
     searchable?: boolean;
     label?: string;
@@ -33,7 +33,7 @@ interface MultiselectProps {
 }
 
 const Multiselect: React.FC<MultiselectProps> = ({
-    options = [],
+    data = [],
     placeholder = 'Select...',
     searchable = false,
     label,
@@ -89,8 +89,8 @@ const Multiselect: React.FC<MultiselectProps> = ({
     };
 
     const filteredOptions = filter
-        ? options.filter((option) => filter(option, searchQuery))
-        : options.filter((option) =>
+        ? data.filter((option) => filter(option, searchQuery))
+        : data.filter((option) =>
               option.label.toLowerCase().includes(searchQuery.toLowerCase())
           );
 
@@ -138,13 +138,13 @@ const Multiselect: React.FC<MultiselectProps> = ({
                         renderSelected ? (
                             renderSelected(
                                 selectedOptions.map((value) =>
-                                    options.find((opt) => opt.value === value)
+                                    data.find((opt) => opt.value === value)
                                 ) as Option[]
                             )
                         ) : (
                             <div className="flex flex-nowrap gap-2">
                                 {selectedOptions.map((value) => {
-                                    const selectedOption = options.find((opt) => opt.value === value);
+                                    const selectedOption = data.find((opt) => opt.value === value);
                                     return (
                                         selectedOption && (
                                             <div
