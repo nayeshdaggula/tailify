@@ -86,11 +86,11 @@ const Drawer: React.FC<DrawerProps> = ({
     if (!portalRoot || !open) return null;
 
     const sizeMap: Record<string, string> = {
-        xs: '20rem',  // 192px
-        sm: '24rem',  // 256px
-        md: '32rem',  // 384px
-        lg: '48rem',  // 512px
-        xl: '64rem',  // 640px
+        xs: '20rem',
+        sm: '24rem',
+        md: '32rem',
+        lg: '48rem',
+        xl: '64rem',
     };
 
     const widthStyle = size in sizeMap ? sizeMap[size] : size; // Allow both preset and custom sizes
