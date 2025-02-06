@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 type DrawerProps = {
-    open: boolean; // Whether the drawer is open
-    onClose: () => void; // Function to close the drawer
-    children: React.ReactNode; // Drawer content
+    open: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-    position?: 'left' | 'right' | 'top' | 'bottom'; // Position of the drawer
-    closeOnClickOutside?: boolean; // Close the drawer when clicking outside
-    closeOnEscape?: boolean; // Close the drawer when pressing Escape
-    padding?: string; // Custom padding classes
+    position?: 'left' | 'right' | 'top' | 'bottom';
+    closeOnClickOutside?: boolean;
+    closeOnEscape?: boolean;
+    padding?: string;
+    withCloseButton?: boolean;
 };
 
 const Drawer: React.FC<DrawerProps> = ({
@@ -21,12 +22,12 @@ const Drawer: React.FC<DrawerProps> = ({
     closeOnClickOutside = true,
     closeOnEscape = true,
     padding = 'p-4',
+    withCloseButton = true,
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
     useEffect(() => {
-        // Locate or create the portal container
-        let portal = document.querySelector('[data-drawer-portal="true"]') as HTMLElement | null;
+        let portal = document.querySelector('[data-drawer-portal]') as HTMLElement | null;
 
         if (!portal) {
             portal = document.createElement('div');
@@ -37,7 +38,6 @@ const Drawer: React.FC<DrawerProps> = ({
         setPortalRoot(portal);
 
         return () => {
-            // Optional: Clean up dynamically created portal
             if (portal && document.body.contains(portal)) {
                 document.body.removeChild(portal);
             }
@@ -63,7 +63,7 @@ const Drawer: React.FC<DrawerProps> = ({
     }, [open, closeOnEscape, onClose]);
 
     const handleClickOutside = (event: MouseEvent) => {
-        if (closeOnClickOutside && event.target === portalRoot) {
+        if (closeOnClickOutside && portalRoot && event.target === portalRoot) {
             onClose();
         }
     };
@@ -85,14 +85,15 @@ const Drawer: React.FC<DrawerProps> = ({
 
     if (!portalRoot || !open) return null;
 
-    // Drawer size and position classes
-    const sizeClasses: Record<string, string> = {
-        xs: 'w-[20rem]',
-        sm: 'w-[24rem]',
-        md: 'w-[32rem]',
-        lg: 'w-[48rem]',
-        xl: 'w-[64rem]',
+    const sizeMap: Record<string, string> = {
+        xs: '20rem',
+        sm: '24rem',
+        md: '32rem',
+        lg: '48rem',
+        xl: '64rem',
     };
+
+    const widthStyle = size in sizeMap ? sizeMap[size] : size; // Allow both preset and custom sizes
 
     const positionClasses: Record<string, string> = {
         left: `inset-y-0 left-0 transform ${open ? 'translate-x-0' : '-translate-x-full'}`,
@@ -101,21 +102,21 @@ const Drawer: React.FC<DrawerProps> = ({
         bottom: `inset-x-0 bottom-0 transform ${open ? 'translate-y-0' : 'translate-y-full'}`,
     };
 
-    const drawerSize = sizeClasses[size] || `w-[${size}]`;
-    const drawerPosition = positionClasses[position];
-
     return ReactDOM.createPortal(
         <div className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out">
             <div
-                className={`fixed bg-white shadow-lg ${drawerSize} ${drawerPosition} ${padding} transition-transform duration-300 ease-in-out`}
+                className={`fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out`}
+                style={{ width: widthStyle }} // Apply width dynamically
             >
-                {children}
-                <button
-                    onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-                >
-                    ✕
-                </button>
+                {withCloseButton && (
+                    <button
+                        onClick={onClose}
+                        className="absolute top-2 right-2 bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition"
+                    >
+                        ✕
+                    </button>
+                )}
+                <div className="mt-10">{children}</div>
             </div>
         </div>,
         portalRoot

@@ -16,6 +16,7 @@ interface SingleSelectProps {
   value?: string | null; // Controlled value
   defaultValue?: string | null; // Uncontrolled default value
   onChange?: (value: string | null) => void; // onChange callback
+  error?: string;
 }
 
 const Select: React.FC<SingleSelectProps> = ({
@@ -29,6 +30,7 @@ const Select: React.FC<SingleSelectProps> = ({
   value = null, // Controlled value
   defaultValue = null, // Default value (initial)
   onChange,
+  error
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
@@ -96,6 +98,7 @@ const Select: React.FC<SingleSelectProps> = ({
           </button>
         )}
       </div>
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
       {isOpen && (
         <div className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
