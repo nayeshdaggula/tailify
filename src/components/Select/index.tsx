@@ -1,3 +1,4 @@
+import { IconCheck, IconCircleDashedX, IconSelector } from '@tabler/icons-react';
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -22,6 +23,8 @@ interface SingleSelectProps {
   dropDownInputClass?: string;
   selectWrapperClass?: string;
   dropDownInputPlaceholder?: string;
+  dropDownListMainClass?: string;
+  dropDownListClass?: string;
 }
 
 const Select: React.FC<SingleSelectProps> = ({
@@ -39,7 +42,9 @@ const Select: React.FC<SingleSelectProps> = ({
   dropDownClass = '',
   dropDownInputClass = '',
   selectWrapperClass = '',
-  dropDownInputPlaceholder = 'Search...'
+  dropDownInputPlaceholder = 'Search...',
+  dropDownListMainClass = '',
+  dropDownListClass = '',
 }) => {
   const [localValue, setLocalValue] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -119,22 +124,24 @@ const Select: React.FC<SingleSelectProps> = ({
       <div
         ref={inputRef}
         onClick={handleToggleDropdown}
-        className={`cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${selectWrapperClass}`}
+        className={`justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${selectWrapperClass}`}
       >
         <span className="text-gray-600">
           {displayValue
             ? data.find((option) => option.value === displayValue)?.label
             : <p className={`py-[1.3px] ${placeholderClass}`}>{placeholder}</p>}
         </span>
-        {clearable && displayValue && (
-          <button
-            onClick={handleClearSelection}
-            className="ml-auto text-gray-400 hover:text-black cursor-pointer"
-            aria-label="Clear selection"
-          >
-            &times;
-          </button>
-        )}
+        {clearable && displayValue ?
+            <IconCircleDashedX 
+              onClick={handleClearSelection}
+              size="15px" 
+              color='red'
+            />
+          :
+          <IconSelector
+            size="15px"
+          />
+        }
       </div>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       {portalRoot && isOpen &&
@@ -152,14 +159,19 @@ const Select: React.FC<SingleSelectProps> = ({
                 />
               </div>
             )}
-            <ul className="max-h-48 overflow-y-auto">
+            <ul className={`${dropDownListMainClass} max-h-48 overflow-y-auto`}>
               {filteredOptions.map((option, index) => (
                 <li
                   key={`tailifyselect-${option.value}-${index}`}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 ${displayValue === option.value ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`${dropDownListClass} flex text-[14px] flex-row justify-between items-center p-2 cursor-pointer hover:bg-gray-100 bg-white`}
                   onClick={() => handleSelectOption(option.value)}
                 >
+
                   {option.label}
+                  {
+                    displayValue === option.value &&
+                    <IconCheck size="14px" />
+                  }
                 </li>
               ))}
             </ul>

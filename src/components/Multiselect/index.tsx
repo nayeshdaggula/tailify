@@ -1,3 +1,4 @@
+import { IconCheck, IconCircleDashedX, IconSelector } from '@tabler/icons-react';
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -27,6 +28,10 @@ interface MultiselectProps {
     value?: string[];
     onChange?: (selectedValues: string[]) => void;
     containerClass?: string;
+    dropDownInputClass?: string;
+    dropDownInputPlaceholder?: string;
+    dropDownListMainClass?: string;
+    dropDownListClass?: string;
 }
 
 const Multiselect: React.FC<MultiselectProps> = ({
@@ -48,6 +53,10 @@ const Multiselect: React.FC<MultiselectProps> = ({
     value = [],
     onChange,
     containerClass = '',
+    dropDownInputClass = '',
+    dropDownInputPlaceholder = 'Search...',
+    dropDownListMainClass = '',
+    dropDownListClass = '',
 }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>(value || []);
     const [isOpen, setIsOpen] = useState(false);
@@ -156,9 +165,9 @@ const Multiselect: React.FC<MultiselectProps> = ({
             )}
             <div
                 onClick={handleToggleDropdown}
-                className={`cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 ${disabled
-                        ? 'bg-gray-100 cursor-not-allowed'
-                        : 'bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-blue-500'
+                className={` justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 ${disabled
+                    ? 'bg-gray-100 cursor-not-allowed'
+                    : 'bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-blue-500'
                     } ${error ? 'border-red-500' : 'border-gray-300'}`}
             >
                 <span className="text-gray-600 flex-1 overflow-x-auto whitespace-nowrap">
@@ -198,15 +207,18 @@ const Multiselect: React.FC<MultiselectProps> = ({
                         <p className={`py-[1.3px] ${placeholderClass}`}>{placeholder}</p>
                     )}
                 </span>
-                {clearable && selectedOptions.length > 0 && (
-                    <button
-                        onClick={handleClearSelection}
-                        className="ml-auto text-gray-400 hover:text-black cursor-pointer"
-                        aria-label="Clear selection"
-                    >
-                        &times;
-                    </button>
-                )}
+                {
+                    clearable && selectedOptions.length > 0 ?
+                        <IconCircleDashedX
+                            onClick={handleClearSelection}
+                            size="15px"
+                            color='red'
+                        />
+                        :
+                        <IconSelector
+                            size="15px"
+                        />
+                }
             </div>
 
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
@@ -222,25 +234,36 @@ const Multiselect: React.FC<MultiselectProps> = ({
                             <div className="p-2">
                                 <input
                                     type="text"
-                                    className="w-full p-2 border rounded-md"
-                                    placeholder="Search..."
+                                    className={`focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
+                                    placeholder={dropDownInputPlaceholder}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     autoFocus={isOpen}
                                 />
                             </div>
                         )}
-                        <ul className="max-h-48 overflow-y-auto">
-                            {filteredOptions.map((option) => (
+                        <ul className={`${dropDownListMainClass} max-h-48 overflow-y-auto`}>
+                            {filteredOptions.map((option, index) => (
                                 <li
-                                    key={option.value}
-                                    className="p-2 cursor-pointer hover:bg-gray-100"
+                                    key={`multiselect-${option.value}-${index}`}
+                                    className={`p-2 cursor-pointer hover:bg-gray-100 bg-white ${dropDownListClass}`}
                                     onClick={() => handleSelectOption(option.value)}
                                 >
-                                    {renderOption ? renderOption(option) : option.label}
+                                    {
+                                        renderOption ?
+                                            renderOption(option) :
+                                            <div className='text-[14px] flex flex-row justify-between items-center'>
+                                                <span>{option.label}</span>
+                                                {
+                                                    selectedOptions.includes(option.value) &&
+                                                    <IconCheck size="14px" />
+                                                }
+                                            </div>
+                                    }
                                 </li>
                             ))}
                         </ul>
+
                     </div>,
                     portalRoot
                 )}
