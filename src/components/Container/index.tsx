@@ -23,7 +23,7 @@ const Container: React.FC<ContainerProps> = ({
             case 'xl': return 'max-w-xl';
             default:
                 if (size.endsWith('%') || size.endsWith('px')) {
-                    return `w-[${size}]`; // Tailwind allows custom widths like 'w-[30%]' or 'w-[100px]'
+                    return 'w-[' + size +']';
                 }
                 return 'max-w-md'; // Default size if invalid size is passed
         }

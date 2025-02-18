@@ -58,11 +58,11 @@ function Text({
 
   
   if (color.includes('#') || color.includes('rgb')) {
-    colorStyles[color] = `text-[${color}]`;
+    colorStyles[color] = 'text-[' + color + ']';
   }
 
   if (size.includes('px') || size.includes('rem')) {
-    sizeStyles[size] = `text-[${size}]`;
+    sizeStyles[size] = 'text-[' + size + ']';
   }
 
   const style = clsx(

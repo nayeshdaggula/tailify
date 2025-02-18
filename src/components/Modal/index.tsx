@@ -74,8 +74,8 @@ const Modal: React.FC<ModalProps> = ({
 
     // Adjust size if it contains % or vw
     if (size.includes('%') || size.includes('vw')) {
-        sizeClasses[size] = `w-[${size}] min-h-[${size}]`;
-    }
+        sizeClasses[size] = 'w-[' + size + '] min-h-[' + size + ']';
+    }    
 
     // Check if fullscreen is true
     if (fullscreen) {
