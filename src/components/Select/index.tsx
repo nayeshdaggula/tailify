@@ -81,9 +81,8 @@ const Select: React.FC<SingleSelectProps> = ({
     };
   }, []);
 
-  const handleToggleDropdown = () => {
-    setIsOpen((prev) => !prev);
-    if (!isOpen && inputRef.current) {
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
       setDropdownStyle({
         position: "absolute",
@@ -93,6 +92,10 @@ const Select: React.FC<SingleSelectProps> = ({
         zIndex: 1000,
       });
     }
+  }, [isOpen]);
+
+  const handleToggleDropdown = () => {
+    setTimeout(() => setIsOpen((prev) => !prev), 100);
   };
 
   const handleSelectOption = (value: string) => {
@@ -104,7 +107,8 @@ const Select: React.FC<SingleSelectProps> = ({
     setIsOpen(false);
   };
 
-  const handleClearSelection = () => {
+  const handleClearSelection = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent dropdown from opening when clicking the clear icon
     if (onChange) {
       onChange(null);
     } else {
@@ -131,49 +135,48 @@ const Select: React.FC<SingleSelectProps> = ({
             ? data.find((option) => option.value === displayValue)?.label
             : <p className={`py-[1.3px] ${placeholderClass}`}>{placeholder}</p>}
         </span>
-        {clearable && displayValue ?
-            <IconCircleDashedX 
-              onClick={handleClearSelection}
-              size="15px" 
-              color='red'
-            />
-          :
-          <IconSelector
-            size="15px"
+        {clearable && displayValue ? (
+          <IconCircleDashedX 
+            onClick={handleClearSelection}
+            size="15px" 
+            color='red'
           />
-        }
+        ) : (
+          <IconSelector size="15px" />
+        )}
       </div>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+
       {portalRoot && isOpen &&
         ReactDOM.createPortal(
-          <div style={dropdownStyle} className={`bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass}`} ref={dropdownRef}>
+          <div style={dropdownStyle} className={`bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass}`}>
             {searchable && (
-              <div className={`p-2`}>
+              <div className="p-2">
                 <input
                   type="text"
                   className={`focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
                   placeholder={dropDownInputPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus={isOpen}
+                  autoFocus
                 />
               </div>
             )}
             <ul className={`${dropDownListMainClass} max-h-48 overflow-y-auto`}>
-              {filteredOptions.map((option, index) => (
-                <li
-                  key={`tailifyselect-${option.value}-${index}`}
-                  className={`${dropDownListClass} flex text-[14px] flex-row justify-between items-center p-2 cursor-pointer hover:bg-gray-100 bg-white`}
-                  onClick={() => handleSelectOption(option.value)}
-                >
-
-                  {option.label}
-                  {
-                    displayValue === option.value &&
-                    <IconCheck size="14px" />
-                  }
-                </li>
-              ))}
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((option, index) => (
+                  <li
+                    key={`tailifyselect-${option.value}-${index}`}
+                    className={`${dropDownListClass} flex text-[14px] flex-row justify-between items-center p-2 cursor-pointer hover:bg-gray-100 bg-white`}
+                    onClick={() => handleSelectOption(option.value)}
+                  >
+                    {option.label}
+                    {displayValue === option.value && <IconCheck size="14px" />}
+                  </li>
+                ))
+              ) : (
+                <li className="text-gray-500 text-sm p-2">No options found</li>
+              )}
             </ul>
           </div>,
           portalRoot
