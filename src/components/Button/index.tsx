@@ -159,12 +159,12 @@ export function Button({
   if (color.includes('#') || color.includes('rgb')) {
     colorStyles[color] = {
       default: 'text-black-800 bg-transparent border border-black-300 hover:bg-gray-100',
-      filled: `text-white bg-[${color}]`,
-      light: `text-white bg-[${color}]`,
-      outline: `text-[${color}] bg-transparent border border-[${color}]`,
-      subtle: `text-white bg-[${color}]`,
-      transparent: `text-[${color}] bg-transparent`,
-      white: `text-white bg-[${color}]`,
+      filled: 'text-white bg-[' + color + ']',
+      light: 'text-white bg-[' + color + ']',
+      outline: 'text-[' + color + '] bg-transparent border border-[' + color + ']',
+      subtle: 'text-white bg-[' + color + ']',
+      transparent: 'text-[' + color + '] bg-transparent',
+      white: 'text-white bg-[' + color + ']',
     }
   }
 
