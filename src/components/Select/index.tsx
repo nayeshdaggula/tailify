@@ -95,8 +95,39 @@ const Select: React.FC<SingleSelectProps> = ({
   }, [isOpen]);
 
   const handleToggleDropdown = () => {
-    setTimeout(() => setIsOpen((prev) => !prev), 100);
+    console.log('Dropdown clicked');
+    setIsOpen((prev) => !prev);
+    if (!isOpen && inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setDropdownStyle({
+        position: "absolute",
+        top: `${rect.bottom + window.scrollY + 5}px`,
+        left: `${rect.left + window.scrollX}px`,
+        width: `${rect.width}px`,
+        zIndex: 1000,
+      });
+    }
+    if (!portalRoot) {
+      let portal = document.querySelector('[data-portal="true"]') as HTMLElement | null;
+      if (!portal) {
+        portal = document.createElement('div');
+        portal.setAttribute('data-portal', 'true');
+        document.body.appendChild(portal);
+      }
+      setPortalRoot(portal);
+    }
   };
+
+  useEffect(() => {
+    let portal = document.querySelector('[data-portal="true"]') as HTMLElement | null;
+    if (!portal) {
+        portal = document.createElement('div');
+        portal.setAttribute('data-portal', 'true');
+        document.body.appendChild(portal);
+    }
+    console.log('Portal created:', portal);
+    setPortalRoot(portal);
+}, []);
 
   const handleSelectOption = (value: string) => {
     if (onChange) {
