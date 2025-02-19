@@ -1,5 +1,5 @@
 import { IconCheck, IconCircleDashedX, IconSelector } from '@tabler/icons-react';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 
 interface Option {
@@ -32,6 +32,7 @@ interface MultiselectProps {
     dropDownInputPlaceholder?: string;
     dropDownListMainClass?: string;
     dropDownListClass?: string;
+    withPortal?: boolean;
 }
 
 const Multiselect: React.FC<MultiselectProps> = ({
@@ -57,6 +58,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
     dropDownInputPlaceholder = 'Search...',
     dropDownListMainClass = '',
     dropDownListClass = '',
+    withPortal = true,
 }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>(value || []);
     const [isOpen, setIsOpen] = useState(false);
@@ -68,14 +70,16 @@ const Multiselect: React.FC<MultiselectProps> = ({
 
     // Create Portal for Dropdown
     useEffect(() => {
-        let portal = document.querySelector('[data-portal="true"]') as HTMLElement | null;
-        if (!portal) {
-            portal = document.createElement('div');
-            portal.setAttribute('data-portal', 'true');
-            document.body.appendChild(portal);
+        if (withPortal) {
+            let portal = document.querySelector('[data-portal="true"]') as HTMLElement | null;
+            if (!portal) {
+                portal = document.createElement('div');
+                portal.setAttribute('data-portal', 'true');
+                document.body.appendChild(portal);
+            }
+            setPortalRoot(portal);
         }
-        setPortalRoot(portal);
-    }, []);
+    }, [withPortal]);
 
     useEffect(() => {
         if (JSON.stringify(selectedOptions) !== JSON.stringify(value)) {
@@ -102,33 +106,35 @@ const Multiselect: React.FC<MultiselectProps> = ({
         };
     }, []);
 
-    // Adjust dropdown position dynamically
-    useEffect(() => {
-        if (isOpen && inputRef.current) {
-            const rect = inputRef.current.getBoundingClientRect();
-            const dropdownHeight = 200; // Approximate dropdown height
+    const handleToggleDropdown = useCallback(() => {
+        let newisOpen = !isOpen;
+        if (!disabled) {
+            setIsOpen(newisOpen);
+        };
 
-            let top = rect.bottom + window.scrollY + 5;
-            let bottomSpace = window.innerHeight - rect.bottom;
+        if (withPortal) {
+            if (newisOpen && inputRef.current) {
+                const rect = inputRef.current.getBoundingClientRect();
+                const dropdownHeight = 200; // Approximate dropdown height
 
-            if (bottomSpace < dropdownHeight) {
-                // Move dropdown above the input if not enough space below
-                top = rect.top + window.scrollY - dropdownHeight - 5;
+                let top = rect.bottom + window.scrollY + 5;
+                let bottomSpace = window.innerHeight - rect.bottom;
+
+                if (bottomSpace < dropdownHeight) {
+                    // Move dropdown above the input if not enough space below
+                    top = rect.top + window.scrollY - dropdownHeight - 5;
+                }
+
+                setDropdownStyle({
+                    position: "absolute",
+                    top: `${top}px`,
+                    left: `${rect.left + window.scrollX}px`,
+                    width: `${rect.width}px`,
+                    zIndex: 1050, // Ensure it's above other elements
+                });
             }
-
-            setDropdownStyle({
-                position: "absolute",
-                top: `${top}px`,
-                left: `${rect.left + window.scrollX}px`,
-                width: `${rect.width}px`,
-                zIndex: 1050, // Ensure it's above other elements
-            });
         }
-    }, [isOpen]);
-
-    const handleToggleDropdown = () => {
-        if (!disabled) setIsOpen((prev) => !prev);
-    };
+    }, [isOpen, inputRef, disabled, withPortal]);
 
     const handleSelectOption = (value: string) => {
         if (maxSelectedValues && selectedOptions.length >= maxSelectedValues) return;
@@ -155,6 +161,49 @@ const Multiselect: React.FC<MultiselectProps> = ({
         : data.filter((option) =>
             option.label.toLowerCase().includes(searchQuery.toLowerCase())
         );
+
+    const dropDownContent = (
+        <div
+            style={withPortal ? dropdownStyle : {}}
+            className={`bg-white border rounded-md shadow-lg ${dropdownHeight} overflow-y-auto ${dropdownWidth}`}
+            ref={dropdownRef}
+        >
+            {searchable && (
+                <div className="p-2">
+                    <input
+                        type="text"
+                        className={`focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
+                        placeholder={dropDownInputPlaceholder}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoFocus={isOpen}
+                    />
+                </div>
+            )}
+            <ul className={`${dropDownListMainClass} max-h-48 overflow-y-auto`}>
+                {filteredOptions.map((option, index) => (
+                    <li
+                        key={`multiselect-${option.value}-${index}`}
+                        className={`p-2 cursor-pointer hover:bg-gray-100 bg-white ${dropDownListClass}`}
+                        onClick={() => handleSelectOption(option.value)}
+                    >
+                        {
+                            renderOption ?
+                                renderOption(option) :
+                                <div className='text-[14px] flex flex-row justify-between items-center'>
+                                    <span>{option.label}</span>
+                                    {
+                                        selectedOptions.includes(option.value) &&
+                                        <IconCheck size="14px" />
+                                    }
+                                </div>
+                        }
+                    </li>
+                ))}
+            </ul>
+
+        </div>
+    );
 
     return (
         <div className={`relative w-full ${containerClass}`} ref={inputRef}>
@@ -223,50 +272,8 @@ const Multiselect: React.FC<MultiselectProps> = ({
 
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
-            {portalRoot && isOpen &&
-                ReactDOM.createPortal(
-                    <div
-                        style={dropdownStyle}
-                        className={`bg-white border rounded-md shadow-lg ${dropdownHeight} overflow-y-auto ${dropdownWidth}`}
-                        ref={dropdownRef}
-                    >
-                        {searchable && (
-                            <div className="p-2">
-                                <input
-                                    type="text"
-                                    className={`focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
-                                    placeholder={dropDownInputPlaceholder}
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    autoFocus={isOpen}
-                                />
-                            </div>
-                        )}
-                        <ul className={`${dropDownListMainClass} max-h-48 overflow-y-auto`}>
-                            {filteredOptions.map((option, index) => (
-                                <li
-                                    key={`multiselect-${option.value}-${index}`}
-                                    className={`p-2 cursor-pointer hover:bg-gray-100 bg-white ${dropDownListClass}`}
-                                    onClick={() => handleSelectOption(option.value)}
-                                >
-                                    {
-                                        renderOption ?
-                                            renderOption(option) :
-                                            <div className='text-[14px] flex flex-row justify-between items-center'>
-                                                <span>{option.label}</span>
-                                                {
-                                                    selectedOptions.includes(option.value) &&
-                                                    <IconCheck size="14px" />
-                                                }
-                                            </div>
-                                    }
-                                </li>
-                            ))}
-                        </ul>
 
-                    </div>,
-                    portalRoot
-                )}
+            {isOpen && (withPortal && portalRoot ? ReactDOM.createPortal(dropDownContent, portalRoot) : dropDownContent)}
         </div>
     );
 };
