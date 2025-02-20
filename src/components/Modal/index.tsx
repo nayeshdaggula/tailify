@@ -88,7 +88,7 @@ const Modal: React.FC<ModalProps> = ({
             className={`fixed inset-0 flex items-center justify-center bg-black/50 ${margin}`}
             style={{ zIndex }}
         >
-            <div
+            <section
                 className={`relative bg-white rounded-sm shadow-sm ${sizeClasses[size]} ${padding} ${containerClassName}`}
             >
                 {/* Conditionally render the close button */}
@@ -101,7 +101,7 @@ const Modal: React.FC<ModalProps> = ({
                     </button>
                 )}
                 {children}
-            </div>
+            </section>
         </div>,
         portalRoot
     );
