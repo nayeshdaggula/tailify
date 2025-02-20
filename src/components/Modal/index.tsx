@@ -89,7 +89,7 @@ const Modal: React.FC<ModalProps> = ({
             style={{ zIndex }}
         >
             <div
-                className={`relative bg-white rounded-lg shadow-lg ${sizeClasses[size]} ${padding} ${containerClassName}`}
+                className={`relative bg-white rounded-sm shadow-sm ${sizeClasses[size]} ${padding} ${containerClassName}`}
             >
                 {/* Conditionally render the close button */}
                 {withCloseButton && (
