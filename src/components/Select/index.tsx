@@ -92,13 +92,29 @@ const Select: React.FC<SingleSelectProps> = ({
       if(withPortal === true){  
         if (newisOpen && inputRef.current) {
           const rect = inputRef.current.getBoundingClientRect();
-          setDropdownStyle({
-            position: 'absolute',
-            top: `${rect.bottom + window.scrollY + 5}px`,
-            left: `${rect.left + window.scrollX}px`,
-            width: `${rect.width}px`,
-            zIndex: 1000,
-          });
+
+          const isParentModal = inputRef.current?.closest('[data-portal="true"]') ? true : false;
+          if (isParentModal === true) {            
+            const parentDrawerStyles = (inputRef.current?.closest('[data-portal="true"]') as HTMLElement)?.innerHTML;
+            let parentDrawerZIndex = parentDrawerStyles.match(/z-index: ([0-9]+);/);
+            let newparentDrawerZIndex = parentDrawerZIndex ? parentDrawerZIndex[1] : '0';
+            
+            setDropdownStyle({
+              position: 'absolute',
+              top: `${rect.bottom + window.scrollY + 5}px`,
+              left: `${rect.left + window.scrollX}px`,
+              width: `${rect.width}px`,
+              zIndex: parseInt(newparentDrawerZIndex) + 1,
+            });
+          }else{
+            setDropdownStyle({
+              position: 'absolute',
+              top: `${rect.bottom + window.scrollY + 5}px`,
+              left: `${rect.left + window.scrollX}px`,
+              width: `${rect.width}px`,
+              zIndex: 999,
+            });
+          }
         }
       }
   }, [isOpen, inputRef, withPortal]);

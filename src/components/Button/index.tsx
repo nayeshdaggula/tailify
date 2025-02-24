@@ -16,7 +16,7 @@ export function Button({
   className,
   ...props
 }: ButtonProps) {
-  const baseStyle = 'inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseStyle = 'cursor-pointer inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2';
   
   const sizeStyles = {
     xs: 'px-2 py-1 text-xs',

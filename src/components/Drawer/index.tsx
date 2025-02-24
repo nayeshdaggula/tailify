@@ -1,3 +1,4 @@
+import { IconX } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -11,6 +12,8 @@ type DrawerProps = {
     closeOnEscape?: boolean;
     padding?: string;
     withCloseButton?: boolean;
+    title?: string;
+    zIndex?: number;
 };
 
 const Drawer: React.FC<DrawerProps> = ({
@@ -23,6 +26,8 @@ const Drawer: React.FC<DrawerProps> = ({
     closeOnEscape = true,
     padding = 'p-4',
     withCloseButton = true,
+    title = '',
+    zIndex = 50
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -105,18 +110,28 @@ const Drawer: React.FC<DrawerProps> = ({
     return ReactDOM.createPortal(
         <div className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out">
             <div
-                className={`fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out`}
-                style={{ width: widthStyle }} // Apply width dynamically
+                className={`fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out ${zIndex}`}
+                style={{ width: widthStyle }}
             >
-                {withCloseButton && (
-                    <button
-                        onClick={onClose}
-                        className="absolute top-2 right-2 bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition"
-                    >
-                        ✕
-                    </button>
-                )}
-                <div className="mt-10">{children}</div>
+                {
+                    (title !== '' || withCloseButton === true) && 
+                    <header className={`flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3`}>
+                        {
+                            title && <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
+                        }
+                        {withCloseButton && (
+                            <IconX
+                                size={'20px'}
+                                color='#000'
+                                onClick={onClose} 
+                                className='cursor-pointer'
+                            />
+                        )}
+                    </header>
+                }
+                <div className="overflow-y-auto h-full overflow-x-hidden">
+                    {children}
+                </div>
             </div>
         </div>,
         portalRoot

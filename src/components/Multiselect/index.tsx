@@ -124,14 +124,29 @@ const Multiselect: React.FC<MultiselectProps> = ({
                     // Move dropdown above the input if not enough space below
                     top = rect.top + window.scrollY - dropdownHeight - 5;
                 }
+                
+                const isParentModal = inputRef.current?.closest('[data-portal="true"]') ? true : false;
+                if (isParentModal === true) {
+                    const parentDrawerStyles = (inputRef.current?.closest('[data-portal="true"]') as HTMLElement)?.innerHTML;
+                    let parentDrawerZIndex = parentDrawerStyles.match(/z-index: ([0-9]+);/);
+                    let newparentDrawerZIndex = parentDrawerZIndex ? parentDrawerZIndex[1] : '0';
 
-                setDropdownStyle({
-                    position: "absolute",
-                    top: `${top}px`,
-                    left: `${rect.left + window.scrollX}px`,
-                    width: `${rect.width}px`,
-                    zIndex: 1050, // Ensure it's above other elements
-                });
+                    setDropdownStyle({
+                        position: "absolute",
+                        top: `${top}px`,
+                        left: `${rect.left + window.scrollX}px`,
+                        width: `${rect.width}px`,
+                        zIndex: parseInt(newparentDrawerZIndex) + 1,
+                    });
+                } else {
+                    setDropdownStyle({
+                        position: "absolute",
+                        top: `${top}px`,
+                        left: `${rect.left + window.scrollX}px`,
+                        width: `${rect.width}px`,
+                        zIndex: 999,
+                    });
+                }
             }
         }
     }, [isOpen, inputRef, disabled, withPortal]);
