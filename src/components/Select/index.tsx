@@ -86,38 +86,49 @@ const Select: React.FC<SingleSelectProps> = ({
   }, []);
 
   const handleToggleDropdown = useCallback(() => {
-      let newisOpen = !isOpen;
-      setIsOpen(newisOpen);
+    let newisOpen = !isOpen;
+    setIsOpen(newisOpen);
 
-      if(withPortal === true){  
-        if (newisOpen && inputRef.current) {
-          const rect = inputRef.current.getBoundingClientRect();
+    if (withPortal) {
+      if (newisOpen && inputRef.current) {
+        const rect = inputRef.current.getBoundingClientRect();
+        const dropdownHeight = 200; // Approximate dropdown height
 
-          const isParentModal = inputRef.current?.closest('[data-portal="true"]') ? true : false;
-          if (isParentModal === true) {            
-            const parentDrawerStyles = (inputRef.current?.closest('[data-portal="true"]') as HTMLElement)?.innerHTML;
-            let parentDrawerZIndex = parentDrawerStyles.match(/z-index: ([0-9]+);/);
-            let newparentDrawerZIndex = parentDrawerZIndex ? parentDrawerZIndex[1] : '0';
-            
-            setDropdownStyle({
-              position: 'absolute',
-              top: `${rect.bottom + window.scrollY + 5}px`,
-              left: `${rect.left + window.scrollX}px`,
-              width: `${rect.width}px`,
-              zIndex: parseInt(newparentDrawerZIndex) + 1,
-            });
-          }else{
-            setDropdownStyle({
-              position: 'absolute',
-              top: `${rect.bottom + window.scrollY + 5}px`,
-              left: `${rect.left + window.scrollX}px`,
-              width: `${rect.width}px`,
-              zIndex: 999,
-            });
-          }
+        let height = inputRef.current.clientHeight + 145;
+
+        let top = rect.bottom + window.scrollY + 5;
+        let bottomSpace = window.innerHeight - rect.bottom;
+
+        if (bottomSpace < dropdownHeight) {
+          top = top - height;
+        }
+
+        const isParentModal = inputRef.current?.closest('[data-portal="true"]') ? true : false;
+        if (isParentModal === true) {
+          const parentDrawerStyles = (inputRef.current?.closest('[data-portal="true"]') as HTMLElement)?.innerHTML;
+          let parentDrawerZIndex = parentDrawerStyles.match(/z-index: ([0-9]+);/);
+          let newparentDrawerZIndex = parentDrawerZIndex ? parentDrawerZIndex[1] : '0';
+
+          setDropdownStyle({
+            position: "absolute",
+            top: `${top}px`,
+            left: `${rect.left + window.scrollX}px`,
+            width: `${rect.width}px`,
+            zIndex: parseInt(newparentDrawerZIndex) + 1,
+          });
+        } else {
+          setDropdownStyle({
+            position: "absolute",
+            top: `${top}px`,
+            left: `${rect.left + window.scrollX}px`,
+            width: `${rect.width}px`,
+            zIndex: 999,
+          });
         }
       }
+    }
   }, [isOpen, inputRef, withPortal]);
+
 
   const handleSelectOption = (value: string) => {
     if (onChange) {
@@ -181,8 +192,8 @@ const Select: React.FC<SingleSelectProps> = ({
   );
 
   return (
-    <div 
-      className={`relative w-full ${mainContainerClass}`} 
+    <div
+      className={`relative w-full ${mainContainerClass}`}
       ref={inputRef}
     >
       {label && <label className={`block text-sm font-bold text-black ${labelClass}`}>{label}</label>}

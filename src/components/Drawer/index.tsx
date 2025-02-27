@@ -31,18 +31,20 @@ const Drawer: React.FC<DrawerProps> = ({
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
-    useEffect(() => {
-        let portal = document.querySelector('[data-drawer-portal]') as HTMLElement | null;
+    useEffect(() => {        
+        // Locate or create the portal container
+        let portal = document.querySelector('[data-portal="true"]') as HTMLElement | null;
 
         if (!portal) {
             portal = document.createElement('div');
-            portal.setAttribute('data-drawer-portal', 'true');
+            portal.setAttribute('data-portal', 'true');
             document.body.appendChild(portal);
         }
 
         setPortalRoot(portal);
 
         return () => {
+            // Optional: Clean up dynamically created portal (if required)
             if (portal && document.body.contains(portal)) {
                 document.body.removeChild(portal);
             }
@@ -129,7 +131,7 @@ const Drawer: React.FC<DrawerProps> = ({
                         )}
                     </header>
                 }
-                <div className="overflow-y-auto h-full overflow-x-hidden">
+                <div className="overflow-y-auto h-full overflow-x-hidden pb-[60px]">
                     {children}
                 </div>
             </div>

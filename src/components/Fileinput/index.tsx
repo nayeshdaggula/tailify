@@ -3,12 +3,14 @@ import clsx from 'clsx';
 import { IconX } from '@tabler/icons-react';
 
 interface FileinputProps {
+    mainContainerClass?: string;
     label?: string;
     labelClassName?: string;
     withAsterisk?: boolean;
     radius?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
     description?: string;
     descriptionClassName?: string;
+    accept?: string;
     placeholder?: string;
     clearable?: boolean;
     multiple?: boolean;
@@ -20,12 +22,14 @@ interface FileinputProps {
 }
 
 const Fileinput: React.FC<FileinputProps> = ({
+    mainContainerClass = '',
     label,
     labelClassName,
     withAsterisk = false,
     radius = 'md',
     description,
     descriptionClassName,
+    accept = '*',
     placeholder = 'Choose file(s)',
     clearable = false,
     multiple = false,
@@ -70,7 +74,7 @@ const Fileinput: React.FC<FileinputProps> = ({
     };
 
     return (
-        <div className="w-full flex flex-col gap-2">
+        <div className={`w-full flex flex-col gap-2 ${mainContainerClass}`}>
             {label && (
                 <label className={clsx("font-medium text-gray-700", labelClassName)}>
                     {label}
@@ -92,6 +96,7 @@ const Fileinput: React.FC<FileinputProps> = ({
                     multiple={multiple}
                     {...inputProps}
                     onChange={handleFileChange}
+                    accept={accept}
                 />
                 {/* Visible Text Input */}
                 <div
