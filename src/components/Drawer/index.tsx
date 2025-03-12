@@ -14,6 +14,9 @@ type DrawerProps = {
     withCloseButton?: boolean;
     title?: string;
     zIndex?: number;
+    mainWrapperClass?: string;
+    mainBodyClass?: string;
+    mainHeaderClass?: string;
 };
 
 const Drawer: React.FC<DrawerProps> = ({
@@ -27,7 +30,10 @@ const Drawer: React.FC<DrawerProps> = ({
     padding = 'p-4',
     withCloseButton = true,
     title = '',
-    zIndex = 50
+    zIndex = 50,
+    mainWrapperClass = '',
+    mainBodyClass = '',
+    mainHeaderClass = '',
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -110,14 +116,14 @@ const Drawer: React.FC<DrawerProps> = ({
     };
 
     return ReactDOM.createPortal(
-        <div className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out">
+        <div className={`fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out ${mainWrapperClass}`}>
             <div
                 className={`fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out ${zIndex}`}
                 style={{ width: widthStyle }}
             >
                 {
                     (title !== '' || withCloseButton === true) && 
-                    <header className={`flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3`}>
+                    <header className={`flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
                         {
                             title && <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
                         }
@@ -131,7 +137,7 @@ const Drawer: React.FC<DrawerProps> = ({
                         )}
                     </header>
                 }
-                <div className="overflow-y-auto h-full overflow-x-hidden pb-[60px]">
+                <div className={`overflow-y-auto h-full overflow-x-hidden pb-[60px] ${mainBodyClass}`}>
                     {children}
                 </div>
             </div>

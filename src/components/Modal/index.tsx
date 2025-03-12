@@ -14,6 +14,8 @@ type ModalProps = {
     withCloseButton?: boolean; // Show or hide the close button
     containerClassName?: string; // Custom class for the modal container
     title?: string; // Modal title
+    mainBodyClass?: string; // Custom class for the modal body
+    mainHeaderClass?: string; // Custom class for the modal header
 };
 
 const Modal: React.FC<ModalProps> = ({
@@ -27,7 +29,9 @@ const Modal: React.FC<ModalProps> = ({
     zIndex = 50, // Default z-index
     withCloseButton = true, // Default to showing the close button
     containerClassName = '',
-    title = ''
+    title = '',
+    mainBodyClass = '',
+    mainHeaderClass = '',
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -99,10 +103,8 @@ const Modal: React.FC<ModalProps> = ({
             >
                 {
                     (title !== '' || withCloseButton === true) && 
-                    <header className={`flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3`}>
-                        {
-                            title && <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
-                        }
+                    <header className={`flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
+                        { title && <h2 className="text-lg font-semibold text-gray-700">{title}</h2> }
                         {withCloseButton && (
                             <IconX
                                 size={'20px'}
@@ -113,8 +115,8 @@ const Modal: React.FC<ModalProps> = ({
                         )}
                     </header>
                 }
-                <div className="overflow-x-hidden overflow-y-auto">
-                {children}
+                <div className={`overflow-x-hidden overflow-y-auto ${mainBodyClass}`}>
+                    {children}
                 </div>
             </section>
         </div>,
