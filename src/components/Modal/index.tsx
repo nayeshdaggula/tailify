@@ -16,6 +16,7 @@ type ModalProps = {
     title?: string; // Modal title
     mainBodyClass?: string; // Custom class for the modal body
     mainHeaderClass?: string; // Custom class for the modal header
+    overlyClassName?: string;
 };
 
 const Modal: React.FC<ModalProps> = ({
@@ -32,6 +33,7 @@ const Modal: React.FC<ModalProps> = ({
     title = '',
     mainBodyClass = '',
     mainHeaderClass = '',
+    overlyClassName = '',
 }) => {
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -94,7 +96,7 @@ const Modal: React.FC<ModalProps> = ({
     // Render modal into the portal
     return ReactDOM.createPortal(
         <div
-            className={`fixed inset-0 flex items-center justify-center bg-black/50 ${margin}`}
+            className={`fixed inset-0 flex items-center justify-center bg-black/50 ${margin} ${overlyClassName}`}
             style={{ zIndex }}
         >
             <section
