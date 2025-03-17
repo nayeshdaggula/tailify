@@ -96,28 +96,28 @@ const Modal: React.FC<ModalProps> = ({
     // Render modal into the portal
     return ReactDOM.createPortal(
         <div
-            className={`fixed inset-0 flex items-center justify-center bg-black/50 ${margin} ${overlyClassName}`}
+            className={`modal-overlywrapper fixed inset-0 flex items-center justify-center bg-black/50 ${margin} ${overlyClassName}`}
             style={{ zIndex }}
         >
             <section
                 style={customWidthHeight}
-                className={`relative bg-white rounded-sm shadow-sm ${sizeClasses[size]} ${padding} ${containerClassName}`}
+                className={`modal-mainwrapper relative bg-white rounded-sm shadow-sm ${sizeClasses[size]} ${padding} ${containerClassName}`}
             >
                 {
                     (title !== '' || withCloseButton === true) && 
-                    <header className={`flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
-                        { title && <h2 className="text-lg font-semibold text-gray-700">{title}</h2> }
+                    <header className={`modal-header flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
+                        { title && <h2 className="modal-headertitle text-lg font-semibold text-gray-700">{title}</h2> }
                         {withCloseButton && (
                             <IconX
                                 size={'20px'}
                                 color='#000'
                                 onClick={onClose} 
-                                className='cursor-pointer'
+                                className='modal-headericon cursor-pointer'
                             />
                         )}
                     </header>
                 }
-                <div className={`overflow-x-hidden overflow-y-auto ${mainBodyClass}`}>
+                <div className={`modal-body overflow-x-hidden overflow-y-auto ${mainBodyClass}`}>
                     {children}
                 </div>
             </section>

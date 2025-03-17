@@ -33,34 +33,34 @@ const Textinput: React.FC<TextInputProps> = ({
   type = "text",
 }) => {
   return (
-    <div className="space-y-2">
+    <div className="textinput-wrapper space-y-2">
       {label && (
         <label
           className={clsx(
-            "block text-sm font-bold text-[#000] mb-0",
+            "textinput-label block text-sm font-bold text-[#000] mb-0",
             labelClassName
           )}
         >
           {label}
-          {withAsterisk && <span className="text-red-500 ml-1">*</span>}
+          {withAsterisk && <span className="textinput-asterisk text-red-500 ml-1">*</span>}
         </label>
       )}
       {description && (
         <p
           className={clsx(
-            "text-xs text-gray-500",
+            "textinput-description text-xs text-gray-500",
             descriptionClassName
           )}
         >
           {description}
         </p>
       )}
-      <div className="relative">
+      <div className="textinput-bodywraper relative">
         <input
           {...inputProps} // Spread additional props onto the input element
           type={type}
           className={clsx(
-            "w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50",
+            "textinput-input w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50",
             {
               "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error,
               "border-red-500 focus:ring-red-500": !!error,
@@ -73,12 +73,12 @@ const Textinput: React.FC<TextInputProps> = ({
           onChange={onChange}
         />
         {rightIcon && (
-          <div className="absolute right-3 flex items-center pointer-events-none top-0 bottom-0">
+          <div className="textinput-iconwraper absolute right-3 flex items-center pointer-events-none top-0 bottom-0">
             {rightIcon}
           </div>
         )}
       </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="textinput-error text-sm text-red-500">{error}</p>}
     </div>
   );
 };

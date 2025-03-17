@@ -180,14 +180,14 @@ const Multiselect: React.FC<MultiselectProps> = ({
     const dropDownContent = (
         <div
             style={withPortal ? dropdownStyle : {}}
-            className={`bg-white border rounded-md shadow-lg ${dropdownHeight} overflow-y-auto ${dropdownWidth}`}
+            className={`multiselect-dropdownconatiner bg-white border rounded-md shadow-lg ${dropdownHeight} overflow-y-auto ${dropdownWidth}`}
             ref={dropdownRef}
         >
             {searchable && (
-                <div className="p-2">
+                <div className="multiselect-inputwraper  p-2">
                     <input
                         type="text"
-                        className={`focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
+                        className={`multiselect-input focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
                         placeholder={dropDownInputPlaceholder}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -195,17 +195,17 @@ const Multiselect: React.FC<MultiselectProps> = ({
                     />
                 </div>
             )}
-            <ul className={`${dropDownListMainClass} max-h-48 overflow-y-auto`}>
+            <ul className={`multiselect-dropdownbody ${dropDownListMainClass} max-h-48 overflow-y-auto`}>
                 {filteredOptions.map((option, index) => (
                     <li
                         key={`multiselect-${option.value}-${index}`}
-                        className={`p-2 cursor-pointer hover:bg-gray-100 bg-white ${dropDownListClass}`}
+                        className={`multiselect-dropdownlist p-2 cursor-pointer hover:bg-gray-100 bg-white ${dropDownListClass}`}
                         onClick={() => handleSelectOption(option.value)}
                     >
                         {
                             renderOption ?
                                 renderOption(option) :
-                                <div className='text-[14px] flex flex-row justify-between items-center'>
+                                <div className='multiselect-dropdownlistsingle  text-[14px] flex flex-row justify-between items-center'>
                                     <span>{option.label}</span>
                                     {
                                         selectedOptions.includes(option.value) &&
@@ -221,20 +221,20 @@ const Multiselect: React.FC<MultiselectProps> = ({
     );
 
     return (
-        <div className={`relative w-full ${containerClass}`} ref={inputRef}>
+        <div className={`multiselect-container relative w-full ${containerClass}`} ref={inputRef}>
             {label && (
-                <label className={`block text-sm font-bold text-black ${labelClass}`}>
+                <label className={`multiselect-label block text-sm font-bold text-black ${labelClass}`}>
                     {label}
                 </label>
             )}
             <div
                 onClick={handleToggleDropdown}
-                className={` justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 ${disabled
+                className={`multiselect-option multiselect-label justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 ${disabled
                     ? 'bg-gray-100 cursor-not-allowed'
                     : 'bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-blue-500'
                     } ${error ? 'border-red-500' : 'border-gray-300'}`}
             >
-                <span className="text-gray-600 flex-1 overflow-x-auto whitespace-nowrap">
+                <span className="multiselect-valuecontainer text-gray-600 flex-1 overflow-x-auto whitespace-nowrap">
                     {selectedOptions.length ? (
                         renderSelected ? (
                             renderSelected(
@@ -243,21 +243,21 @@ const Multiselect: React.FC<MultiselectProps> = ({
                                 ) as Option[]
                             )
                         ) : (
-                            <div className="flex flex-nowrap gap-2">
+                            <div className="multiselect-valuelist flex flex-nowrap gap-2">
                                 {selectedOptions.map((value) => {
                                     const selectedOption = data.find((opt) => opt.value === value);
                                     return (
                                         selectedOption && (
                                             <div
                                                 key={value}
-                                                className="flex items-center px-2 text-black border-black rounded-full border-[1px]"
+                                                className="multiselect-singlevalue flex items-center px-2 text-black border-black rounded-full border-[1px]"
                                             >
                                                 <span className="text-[13px]">
                                                     {selectedOption.label}
                                                 </span>
                                                 <button
                                                     onClick={() => handleRemoveSelected(value)}
-                                                    className="ml-2 text-black cursor-pointer"
+                                                    className="multiselect-singlevalueremove ml-2 text-black cursor-pointer"
                                                 >
                                                     &times;
                                                 </button>
@@ -285,7 +285,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
                 }
             </div>
 
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+            {error && <p className="multiselect-error text-red-500 text-sm mt-1">{error}</p>}
 
 
             {isOpen && (withPortal && portalRoot ? ReactDOM.createPortal(dropDownContent, portalRoot) : dropDownContent)}

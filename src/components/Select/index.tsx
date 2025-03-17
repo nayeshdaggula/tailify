@@ -86,11 +86,11 @@ const Select: React.FC<SingleSelectProps> = ({
   }, []);
 
   const handleToggleDropdown = useCallback(() => {
-    let newisOpen = !isOpen;
-    setIsOpen(newisOpen);
+    let newIsOpen = !isOpen;
+    setIsOpen(newIsOpen);
 
     if (withPortal) {
-      if (newisOpen && inputRef.current) {
+      if (newIsOpen && inputRef.current) {
         const rect = inputRef.current.getBoundingClientRect();
         const dropdownHeight = 200; // Approximate dropdown height
 
@@ -105,16 +105,16 @@ const Select: React.FC<SingleSelectProps> = ({
 
         const isParentModal = inputRef.current?.closest('[data-portal="true"]') ? true : false;
         if (isParentModal === true) {
-          const parentDrawerStyles = (inputRef.current?.closest('[data-portal="true"]') as HTMLElement)?.innerHTML;
-          let parentDrawerZIndex = parentDrawerStyles.match(/z-index: ([0-9]+);/);
-          let newparentDrawerZIndex = parentDrawerZIndex ? parentDrawerZIndex[1] : '0';
+          const parentDrawerStyles = (inputRef.current?.closest('[data-portal="true"]') as HTMLElement)?.style;
+          let parentDrawerZIndex = parentDrawerStyles.zIndex;
+          let newParentDrawerZIndex = parentDrawerZIndex ? parseInt(parentDrawerZIndex) : 0;
 
           setDropdownStyle({
             position: "absolute",
             top: `${top}px`,
             left: `${rect.left + window.scrollX}px`,
             width: `${rect.width}px`,
-            zIndex: parseInt(newparentDrawerZIndex) + 1,
+            zIndex: newParentDrawerZIndex + 1,
           });
         } else {
           setDropdownStyle({
@@ -128,7 +128,6 @@ const Select: React.FC<SingleSelectProps> = ({
       }
     }
   }, [isOpen, inputRef, withPortal]);
-
 
   const handleSelectOption = (value: string) => {
     if (onChange) {

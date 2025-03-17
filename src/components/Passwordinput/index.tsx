@@ -36,34 +36,34 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="passwordinput-wrapper space-y-2">
       {label && (
         <label
           className={clsx(
-            "block text-sm font-bold text-[#000]",
+            "passwordinput-label block text-sm font-bold text-[#000]",
             labelClassName
           )}
         >
           {label}
-          {withAsterisk && <span className="text-red-500 ml-1">*</span>}
+          {withAsterisk && <span className="passwordinput-asterisk text-red-500 ml-1">*</span>}
         </label>
       )}
       {description && (
         <p
           className={clsx(
-            "text-xs text-gray-500",
+            "passwordinput-description text-xs text-gray-500",
             descriptionClassName
           )}
         >
           {description}
         </p>
       )}
-      <div className="relative">
+      <div className="passwordinput-body relative">
         <input
           {...inputProps}
           type={isPasswordVisible ? "text" : "password"}
           className={clsx(
-            "w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 pr-10",
+            "passwordinput-input w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 pr-10",
             {
               "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error,
               "border-red-500 focus:ring-red-500": !!error,
@@ -77,7 +77,7 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
         <button
           type="button"
           onClick={togglePasswordVisibility}
-          className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+          className="passwordinput-visibletoggle absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
         >
           {isPasswordVisible ? (
             <IconEye stroke={2} />
@@ -86,7 +86,7 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
           )}
         </button>
       </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="passwordinput-error text-sm text-red-500">{error}</p>}
     </div>
   );
 };

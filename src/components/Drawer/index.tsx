@@ -116,28 +116,28 @@ const Drawer: React.FC<DrawerProps> = ({
     };
 
     return ReactDOM.createPortal(
-        <div className={`fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out ${mainWrapperClass}`}>
+        <div className={`drawer-overlywrapper fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out ${mainWrapperClass}`}>
             <div
-                className={`fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out ${zIndex}`}
+                className={`drawer-mainwrapper fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out ${zIndex}`}
                 style={{ width: widthStyle }}
             >
                 {
                     (title !== '' || withCloseButton === true) && 
-                    <header className={`flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
+                    <header className={`drawer-header flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
                         {
-                            title && <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
+                            title && <h2 className="drawer-headertitle text-lg font-semibold text-gray-700">{title}</h2>
                         }
                         {withCloseButton && (
                             <IconX
                                 size={'20px'}
                                 color='#000'
                                 onClick={onClose} 
-                                className='cursor-pointer'
+                                className='drawer-headericon cursor-pointer'
                             />
                         )}
                     </header>
                 }
-                <div className={`overflow-y-auto h-full overflow-x-hidden pb-[60px] ${mainBodyClass}`}>
+                <div className={`drawer-body overflow-y-auto h-full overflow-x-hidden pb-[60px] ${mainBodyClass}`}>
                     {children}
                 </div>
             </div>
