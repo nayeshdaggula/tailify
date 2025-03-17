@@ -98,6 +98,7 @@ const Modal: React.FC<ModalProps> = ({
         <div
             className={`modal-overlywrapper fixed inset-0 flex items-center justify-center bg-black/50 ${margin} ${overlyClassName}`}
             style={{ zIndex }}
+            data-modal="true"
         >
             <section
                 style={customWidthHeight}

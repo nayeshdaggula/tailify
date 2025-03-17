@@ -118,8 +118,12 @@ const Drawer: React.FC<DrawerProps> = ({
     return ReactDOM.createPortal(
         <div className={`drawer-overlywrapper fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out ${mainWrapperClass}`}>
             <div
-                className={`drawer-mainwrapper fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out ${zIndex}`}
-                style={{ width: widthStyle }}
+                className={`drawer-mainwrapper fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out`}
+                style={{ 
+                    width: widthStyle,
+                    zIndex: zIndex,
+                 }}
+                data-drawer="true"
             >
                 {
                     (title !== '' || withCloseButton === true) && 
