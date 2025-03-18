@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useTailify } from '../TailifyProvider';
 
 type TextInputProps = {
   label?: string;
@@ -12,7 +13,7 @@ type TextInputProps = {
   descriptionClassName?: string;
   withAsterisk?: boolean;
   error?: string;
-  inputProps?: React.InputHTMLAttributes<HTMLInputElement>; // Additional props for the input element
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   rightIcon?: React.ReactNode;
   type?: string;
 };
@@ -32,12 +33,15 @@ const Textinput: React.FC<TextInputProps> = ({
   rightIcon = null,
   type = "text",
 }) => {
+  const { themeVariant } = useTailify(); // Get theme from context
+
   return (
-    <div className="textinput-wrapper space-y-2">
+    <div className={clsx("textinput-wrapper space-y-2", themeVariant === 'dark' && 'bg-gray-900 text-white')}>
       {label && (
         <label
           className={clsx(
-            "textinput-label block text-sm font-bold text-[#000] mb-0",
+            "textinput-label block text-sm font-bold mb-0",
+            themeVariant === 'dark' ? 'text-white' : 'text-[#000]',
             labelClassName
           )}
         >
@@ -46,23 +50,19 @@ const Textinput: React.FC<TextInputProps> = ({
         </label>
       )}
       {description && (
-        <p
-          className={clsx(
-            "textinput-description text-xs text-gray-500",
-            descriptionClassName
-          )}
-        >
+        <p className={clsx("textinput-description text-xs text-gray-500", themeVariant === 'dark' && 'text-gray-300', descriptionClassName)}>
           {description}
         </p>
       )}
       <div className="textinput-bodywraper relative">
         <input
-          {...inputProps} // Spread additional props onto the input element
+          {...inputProps}
           type={type}
           className={clsx(
-            "textinput-input w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50",
+            "textinput-input w-full rounded-md border p-2 text-sm shadow-sm focus:ring focus:ring-opacity-50",
             {
-              "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error,
+              "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error && themeVariant !== 'dark',
+              "border-gray-600 bg-gray-800 text-white focus:border-blue-300 focus:ring-blue-300": themeVariant === 'dark',
               "border-red-500 focus:ring-red-500": !!error,
             },
             inputClassName,
