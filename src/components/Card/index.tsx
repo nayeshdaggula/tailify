@@ -1,50 +1,32 @@
 import React from 'react';
 import clsx from 'clsx';
+// import { useTailify } from '../TailifyProvider';
 
 // Define the types for Card props
 interface CardProps {
   children: React.ReactNode;
-  padding?: string;
-  margin?: string; 
-  radius?: string | number;
-  shadow?: string; 
-  withBorder?: boolean;
   className?: string;
 }
 
 // Define the types for Card.Section props
 interface CardSectionProps {
   children: React.ReactNode;
-  inheritPadding?: boolean;
-  withBorder?: boolean;
-  padding?: string;
-  margin?: string;
   className?: string;
 }
 
 // Main Card component
 const Card: React.FC<CardProps> & { Section: React.FC<CardSectionProps> } = ({
   children,
-  padding = 'p-4',
-  margin = 'm-0',
-  radius = 'rounded-lg',
-  shadow = 'shadow-none',
-  withBorder = false,
   className,
   ...props
 }) => {
+  // const { themeVariant } = useTailify(); // Get theme from context
+
   const cardClasses = clsx(
-    'w-full h-auto bg-white',
-    padding,
-    margin,
-    radius,
-    shadow,
-    {
-      'border border-gray-300': withBorder,
-    },
+    `flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl p-4 md:p-5 dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70`,
     className
   );
-
+  
   return (
     <div className={cardClasses} {...props}>
       {children}
@@ -55,21 +37,11 @@ const Card: React.FC<CardProps> & { Section: React.FC<CardSectionProps> } = ({
 // Card.Section component
 const CardSection: React.FC<CardSectionProps> = ({
   children,
-  inheritPadding = false,
-  withBorder = false,
-  padding = 'p-4',
-  margin = 'm-0',
   className,
   ...props
 }) => {
   const sectionClasses = clsx(
-    'border-b border-gray-300', // Default bottom border
-    padding,
-    margin,
-    {
-      'pl-4 pr-4': inheritPadding, // Inherit left and right padding from Card
-      'border-t border-gray-300': withBorder,
-    },
+    'border-b border-gray-300',
     className
   );
 

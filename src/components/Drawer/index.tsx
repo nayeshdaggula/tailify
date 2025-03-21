@@ -39,11 +39,11 @@ const Drawer: React.FC<DrawerProps> = ({
 
     useEffect(() => {        
         // Locate or create the portal container
-        let portal = document.querySelector('[data-portal="true"]') as HTMLElement | null;
+        let portal = document.querySelector('[data-drawerportal="true"]') as HTMLElement | null;
 
         if (!portal) {
             portal = document.createElement('div');
-            portal.setAttribute('data-portal', 'true');
+            portal.setAttribute('data-drawerportal', 'true');
             document.body.appendChild(portal);
         }
 

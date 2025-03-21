@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTailify } from '../TailifyProvider';
+import clsx from 'clsx'; // Install clsx for cleaner class merging
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
@@ -12,25 +14,31 @@ const Container: React.FC<ContainerProps> = ({
     size = 'md',
     padding = 'px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16',
     margin = 'mx-auto',
+    className,
     ...props
 }) => {
-    // Function to determine the size class based on the value
-    const getSizeClass = (size: string) => {
-        switch (size) {
-            case 'sm': return 'max-w-sm';
-            case 'md': return 'max-w-md';
-            case 'lg': return 'max-w-lg';
-            case 'xl': return 'max-w-xl';
-            default:
-                if (size.endsWith('%') || size.endsWith('px')) {
-                    return 'w-[' + size +']';
-                }
-                return 'max-w-md'; // Default size if invalid size is passed
-        }
-    };
+    const { themeVariant } = useTailify(); // Get theme from context
+
+    // Determine the size class
+    const sizeClass = {
+        sm: 'max-w-sm',
+        md: 'max-w-md',
+        lg: 'max-w-lg',
+        xl: 'max-w-xl'
+    }[size] || (size.endsWith('%') || size.endsWith('px') ? `w-[${size}]` : 'max-w-md');
 
     return (
-        <div className={`container ${margin} ${padding} ${getSizeClass(size)}`} {...props}>
+        <div
+            className={clsx(
+                'container', 
+                margin, 
+                padding, 
+                sizeClass, 
+                themeVariant === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black',
+                className
+            )}
+            {...props}
+        >
             {children}
         </div>
     );

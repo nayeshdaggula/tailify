@@ -36,7 +36,7 @@ const Textinput: React.FC<TextInputProps> = ({
   const { themeVariant } = useTailify(); // Get theme from context
 
   return (
-    <div className={clsx("textinput-wrapper space-y-2", themeVariant === 'dark' && 'bg-gray-900 text-white')}>
+    <div className={clsx("textinput-wrapper space-y-2")}>
       {label && (
         <label
           className={clsx(
