@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTailify } from '../TailifyProvider';
 import clsx from 'clsx'; // Install clsx for cleaner class merging
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -17,7 +16,6 @@ const Container: React.FC<ContainerProps> = ({
     className,
     ...props
 }) => {
-    const { themeVariant } = useTailify(); // Get theme from context
 
     // Determine the size class
     const sizeClass = {
@@ -34,7 +32,7 @@ const Container: React.FC<ContainerProps> = ({
                 margin, 
                 padding, 
                 sizeClass, 
-                themeVariant === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black',
+                'bg-white text-black',
                 className
             )}
             {...props}

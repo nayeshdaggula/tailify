@@ -170,14 +170,18 @@ const Select: React.FC<SingleSelectProps> = ({
   const dropdownContent = (
     <div
       style={withPortal ? dropdownStyle : {}}
-      className={`select-dropdowncontainer bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass}`}
+      className={`select-dropdowncontainer bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass}
+        dark:bg-gray-800 dark:border-gray-600
+      `}
       ref={dropdownRef}
     >
       {searchable && (
         <div className="select-inputwraper p-2">
           <input
             type="text"
-            className={`select-input focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
+            className={`select-input focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}
+              dark:focus-visible:ring-0 dark:focus-visible:border-transparent
+            `}
             placeholder={dropDownInputPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -190,7 +194,9 @@ const Select: React.FC<SingleSelectProps> = ({
           filteredOptions.map((option, index) => (
             <li
               key={`tailifyselect-${option.value}-${index}`}
-              className={`select-dropdownlistoption ${dropDownListClass} flex text-[14px] flex-row justify-between items-center p-2 cursor-pointer hover:bg-gray-100 bg-white`}
+              className={`select-dropdownlistoption ${dropDownListClass} flex text-[14px] flex-row justify-between items-center p-2 cursor-pointer hover:bg-gray-100 bg-white
+                dark:bg-gray-800 dark:hover:bg-gray-700
+              `}
               onClick={() => handleSelectOption(option.value)}
             >
               {option.label}
@@ -198,7 +204,9 @@ const Select: React.FC<SingleSelectProps> = ({
             </li>
           ))
         ) : (
-          <li className="select-dropdownlistoptionnodata text-gray-500 text-sm p-2">No options found</li>
+          <li className="select-dropdownlistoptionnodata text-gray-500 text-sm p-2
+            dark:text-gray-400
+          ">No options found</li>
         )}
       </ul>
     </div>
@@ -206,26 +214,46 @@ const Select: React.FC<SingleSelectProps> = ({
 
   return (
     <div
-      className={`select-container relative w-full ${mainContainerClass}`}
+      className={`select-container relative w-full ${mainContainerClass}
+        dark:text-gray-300
+      `}
       ref={inputRef}
     >
-      {label && <label className={`select-label block text-sm font-bold text-black ${labelClass}`}>{label}</label>}
+      {label && <label className={`select-label block text-sm font-bold text-black ${labelClass}
+        dark:text-gray-200
+      `}>{label}</label>}
       <div
         onClick={handleToggleDropdown}
-        className={`select-option justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${selectWrapperClass}`}
+        className={`select-option justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${selectWrapperClass}
+          dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:focus:border-blue-400 dark:focus:ring-blue-400
+        `}
       >
-        <span className="select-value text-gray-600">
+        <span className="select-value text-gray-600
+          dark:text-gray-300
+        ">
           {displayValue
             ? data.find((option) => option.value === displayValue)?.label
-            : <p className={`select-placeholder py-[1.3px] ${placeholderClass}`}>{placeholder}</p>}
+            : <p className={`select-placeholder py-[1.3px] ${placeholderClass}
+              dark:text-gray-400
+            `}>{placeholder}</p>}
         </span>
         {clearable && displayValue ? (
-          <IconCircleDashedX onClick={handleClearSelection} size="15px" color="red" />
+          <IconCircleDashedX onClick={handleClearSelection} size="15px" color="red" 
+            className="select-clearicon cursor-pointer
+              dark:text-red-400
+            "
+          />
         ) : (
-          <IconSelector size="15px" />
+          <IconSelector size="15px"
+            className="select-icon
+              dark:text-gray-400
+            "
+          />
         )}
       </div>
-      {error && <p className="select-error text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className="select-error text-red-500 text-sm mt-1
+        dark:text-red-400
+      ">{error}</p>}
 
       {isOpen && (withPortal && portalRoot ? ReactDOM.createPortal(dropdownContent, portalRoot) : dropdownContent)}
     </div>

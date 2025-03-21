@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import { useTailify } from '../TailifyProvider';
 
 type TextInputProps = {
   label?: string;
@@ -33,15 +32,12 @@ const Textinput: React.FC<TextInputProps> = ({
   rightIcon = null,
   type = "text",
 }) => {
-  const { themeVariant } = useTailify(); // Get theme from context
-
   return (
     <div className={clsx("textinput-wrapper space-y-2")}>
       {label && (
         <label
           className={clsx(
-            "textinput-label block text-sm font-bold mb-0",
-            themeVariant === 'dark' ? 'text-white' : 'text-[#000]',
+            "textinput-label block text-sm font-bold mb-2 text-gray-900 dark:text-gray-200",
             labelClassName
           )}
         >
@@ -50,7 +46,7 @@ const Textinput: React.FC<TextInputProps> = ({
         </label>
       )}
       {description && (
-        <p className={clsx("textinput-description text-xs text-gray-500", themeVariant === 'dark' && 'text-gray-300', descriptionClassName)}>
+        <p className={clsx("textinput-description text-xs text-gray-500 dark:text-gray-400", descriptionClassName)}>
           {description}
         </p>
       )}
@@ -59,12 +55,13 @@ const Textinput: React.FC<TextInputProps> = ({
           {...inputProps}
           type={type}
           className={clsx(
-            "textinput-input w-full rounded-md border p-2 text-sm shadow-sm focus:ring focus:ring-opacity-50",
+            "textinput-input w-full rounded-md border p-2 text-sm shadow-sm transition-all duration-200 outline-none",
             {
-              "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error && themeVariant !== 'dark',
-              "border-gray-600 bg-gray-800 text-white focus:border-blue-300 focus:ring-blue-300": themeVariant === 'dark',
-              "border-red-500 focus:ring-red-500": !!error,
+              "border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-200 focus:border-blue-500 dark:focus:border-blue-400":
+                !error,
+              "border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:ring-red-400": !!error,
             },
+            "focus:ring focus:ring-opacity-50 focus-visible:ring-0 focus-visible:border-transparent", // Fix for white border
             inputClassName,
             rightIcon && "pr-10"
           )}
@@ -78,7 +75,7 @@ const Textinput: React.FC<TextInputProps> = ({
           </div>
         )}
       </div>
-      {error && <p className="textinput-error text-sm text-red-500">{error}</p>}
+      {error && <p className="textinput-error text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 };
