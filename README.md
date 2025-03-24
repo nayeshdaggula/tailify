@@ -21,6 +21,12 @@ To configure Tailify with your TailwindCSS project, add the following code on gl
 }
 ```
 
+Add data-tailify-theme-variant to html tag.
+
+```
+<html data-tailify-theme-variant="light">
+```
+
 
 ## Contributing
 
