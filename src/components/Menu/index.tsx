@@ -37,7 +37,6 @@ interface MenuProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange
   shadow?: string;
   trigger?: MenuTrigger;
   width?: number | string;
-  withArrow?: boolean;
   zIndex?: number;
   withPortal?: boolean;
   transitionProps?: TransitionProps;
@@ -66,7 +65,6 @@ const Menu: React.FC<MenuProps> & {
   shadow = 'md',
   trigger = 'click',
   width = 'max-content',
-  withArrow = false,
   zIndex = 300,
   className,
   withPortal = false,
@@ -190,7 +188,6 @@ const Menu: React.FC<MenuProps> & {
           return React.cloneElement(child as React.ReactElement<MenuDropdownProps>, {
             isOpen,
             position,
-            withArrow,
             arrowSize,
             arrowOffset,
             radius,
@@ -232,7 +229,6 @@ interface MenuDropdownProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   isOpen?: boolean;
   position?: FloatingPosition;
-  withArrow?: boolean;
   arrowSize?: number;
   arrowOffset?: number;
   radius?: number | string;
@@ -247,7 +243,6 @@ Menu.Dropdown = ({
   children,
   isOpen,
   position = 'bottom',
-  withArrow = false,
   arrowSize = 7,
   arrowOffset = 5,
   radius,
@@ -288,7 +283,7 @@ Menu.Dropdown = ({
       // If we are not using a portal, rely on relative positioning classes
       // If we are using a portal, rely on the inline `portalStyle`
       className={clsx(
-        'absolute z-10 bg-white border border-gray-200 rounded p-2',
+        'absolute z-10 bg-white border border-gray-200 rounded p-2 dark:bg-gray-800 dark:border-gray-600',
         !withPortal && positionClasses[position],
         shadow && `shadow-${shadow}`,
         className
@@ -299,23 +294,6 @@ Menu.Dropdown = ({
       }}
       {...props}
     >
-      {withArrow && (
-        <div
-          className={clsx('absolute bg-white border border-gray-200', {
-            // Adjust arrow location based on position
-            'top-[-6px] left-1/2 -translate-x-1/2 rotate-45': position === 'bottom',
-            'bottom-[-6px] left-1/2 -translate-x-1/2 rotate-45': position === 'top',
-            'right-[-6px] top-1/2 -translate-y-1/2 rotate-45': position === 'left',
-            'left-[-6px] top-1/2 -translate-y-1/2 rotate-45': position === 'right',
-          })}
-          style={{
-            width: arrowSize,
-            height: arrowSize,
-            zIndex: zIndex - 1,
-            margin: arrowOffset,
-          }}
-        />
-      )}
       {children}
     </div>
   );
@@ -373,6 +351,7 @@ Menu.Item = ({
     <li
       className={clsx(
         'flex items-center justify-between px-3 py-2 cursor-pointer rounded hover:bg-gray-100',
+        'dark:hover:bg-gray-700',
         disabled ? 'cursor-not-allowed opacity-50' : '',
         color && `text-${color}-600`,
         className

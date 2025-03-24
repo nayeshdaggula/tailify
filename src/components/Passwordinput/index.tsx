@@ -63,13 +63,12 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
           {...inputProps}
           type={isPasswordVisible ? "text" : "password"}
           className={clsx(
-            "passwordinput-input w-full rounded-md border p-2 text-sm shadow-sm transition-all duration-200 outline-none",
+            "passwordinput-input w-full rounded-md border p-2 text-sm transition-all duration-200 outline-none",
             {
-              "border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-200 focus:border-blue-500 dark:focus:border-blue-400":
+              "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-200 focus:border-blue-500 dark:focus:border-blue-400":
                 !error,
               "border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:ring-red-400": !!error,
             },
-            "focus:ring focus:ring-opacity-50 focus-visible:ring-0 focus-visible:border-transparent", // Fix for white border
             inputClassName
           )}
           placeholder={placeholder}

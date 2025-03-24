@@ -38,7 +38,6 @@ const Drawer: React.FC<DrawerProps> = ({
     const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
     useEffect(() => {        
-        // Locate or create the portal container
         let portal = document.querySelector('[data-drawerportal="true"]') as HTMLElement | null;
 
         if (!portal) {
@@ -50,7 +49,6 @@ const Drawer: React.FC<DrawerProps> = ({
         setPortalRoot(portal);
 
         return () => {
-            // Optional: Clean up dynamically created portal (if required)
             if (portal && document.body.contains(portal)) {
                 document.body.removeChild(portal);
             }
@@ -106,7 +104,7 @@ const Drawer: React.FC<DrawerProps> = ({
         xl: '64rem',
     };
 
-    const widthStyle = size in sizeMap ? sizeMap[size] : size; // Allow both preset and custom sizes
+    const widthStyle = size in sizeMap ? sizeMap[size] : size;
 
     const positionClasses: Record<string, string> = {
         left: `inset-y-0 left-0 transform ${open ? 'translate-x-0' : '-translate-x-full'}`,
@@ -116,31 +114,28 @@ const Drawer: React.FC<DrawerProps> = ({
     };
 
     return ReactDOM.createPortal(
-        <div className={`drawer-overlywrapper fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ease-in-out ${mainWrapperClass}`}>
+        <div className={`drawer-overlaywrapper fixed inset-0 z-50 bg-black/50 dark:bg-black/70 transition-opacity duration-300 ease-in-out ${mainWrapperClass}`}>
             <div
-                className={`drawer-mainwrapper fixed bg-white shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out`}
+                className={`drawer-mainwrapper fixed bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-lg ${positionClasses[position]} ${padding} transition-transform duration-300 ease-in-out`}
                 style={{ 
                     width: widthStyle,
                     zIndex: zIndex,
                  }}
                 data-drawer="true"
             >
-                {
-                    (title !== '' || withCloseButton === true) && 
-                    <header className={`drawer-header flex items-center ${title !== '' ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
-                        {
-                            title && <h2 className="drawer-headertitle text-lg font-semibold text-gray-700">{title}</h2>
-                        }
+                {(title || withCloseButton) && (
+                    <header className={`drawer-header flex items-center ${title ? 'justify-between' : 'justify-end'} mb-4 px-3 ${mainHeaderClass}`}>
+                        {title && <h2 className="drawer-headertitle text-lg font-semibold text-gray-700 dark:text-gray-200">{title}</h2>}
                         {withCloseButton && (
                             <IconX
                                 size={'20px'}
-                                color='#000'
+                                color="currentColor"
                                 onClick={onClose} 
-                                className='drawer-headericon cursor-pointer'
+                                className='drawer-headericon cursor-pointer text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                             />
                         )}
                     </header>
-                }
+                )}
                 <div className={`drawer-body overflow-y-auto h-full overflow-x-hidden pb-[60px] ${mainBodyClass}`}>
                     {children}
                 </div>

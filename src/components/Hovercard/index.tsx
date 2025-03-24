@@ -37,8 +37,8 @@ const Hovercard: HovercardComponent = ({ children, className, onOpen, onClose })
     >
       {React.Children.map(children, (child) =>
         React.isValidElement(child) &&
-          (child.type as any).displayName &&
-          ["HovercardTarget", "HovercardBody"].includes((child.type as any).displayName)
+        (child.type as any).displayName &&
+        ["HovercardTarget", "HovercardBody"].includes((child.type as any).displayName)
           ? React.cloneElement(child as React.ReactElement<any>, { isOpen, parentRef })
           : child
       )}
@@ -86,26 +86,23 @@ const Body: React.FC<BodyProps> = ({ children, className, withPortal = true, isO
     const updatePosition = () => {
       if (parentRef?.current && bodyRef.current) {
         const rect = parentRef.current.getBoundingClientRect();
-        const bodyWidth = bodyRef.current.offsetWidth || 200; // Approximate width if not loaded yet
+        const bodyWidth = bodyRef.current.offsetWidth || 200;
         const bodyHeight = bodyRef.current.offsetHeight || 100;
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
 
-        const GAP = 8; // Consistent space between target and body
+        const GAP = 8;
 
         const spaceBelow = viewportHeight - rect.bottom;
         const spaceAbove = rect.top;
 
-        // Determine vertical position (above or below)
         const showAbove = spaceBelow < bodyHeight + GAP && spaceAbove > bodyHeight + GAP;
         const topPosition = showAbove
           ? rect.top + window.scrollY - bodyHeight - GAP
           : rect.bottom + window.scrollY + GAP;
 
-        // Determine horizontal position (centered, shifted left or right if needed)
         let leftPosition = rect.left + rect.width / 2 - bodyWidth / 2 + window.scrollX;
 
-        // Prevent overflow on left or right side
         if (leftPosition < 10) leftPosition = 10;
         if (leftPosition + bodyWidth > viewportWidth) leftPosition = viewportWidth - bodyWidth - 10;
 
@@ -137,8 +134,9 @@ const Body: React.FC<BodyProps> = ({ children, className, withPortal = true, isO
       style={style}
       className={clsx(
         "absolute w-48 border border-gray-300 rounded-lg bg-white p-4 shadow-lg transition-opacity duration-200",
+        "dark:bg-gray-800 dark:border-gray-700 dark:shadow-lg",
         isOpen ? "opacity-100 visible" : "opacity-0 invisible",
-        style.top && parseFloat(style.top as string) > rect.bottom + window.scrollY ? "mb-2" : "mt-2", // Ensure consistent spacing
+        style.top && parseFloat(style.top as string) > rect.bottom + window.scrollY ? "mb-2" : "mt-2",
         className
       )}
     >
@@ -146,10 +144,8 @@ const Body: React.FC<BodyProps> = ({ children, className, withPortal = true, isO
     </div>
   ) : null;
 
-
   return withPortal && portalRoot ? ReactDOM.createPortal(bodyContent, portalRoot) : bodyContent;
 };
-
 
 Body.displayName = "HovercardBody";
 

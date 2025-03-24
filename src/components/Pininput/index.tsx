@@ -116,7 +116,7 @@ const Pininput: React.FC<PinInputProps> = ({
             maxLength={1}
             className={clsx(
               "w-10 h-10 border text-center text-lg rounded focus:outline-none focus:ring",
-              "border-gray-300 focus:ring-blue-500 text-gray-900 bg-white",
+              "border-gray-300 focus:ring-blue-500 text-gray-900 bg-gray-50",
               "dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:ring-blue-400",
               error
                 ? "border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:ring-red-400"
