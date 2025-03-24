@@ -70,19 +70,24 @@ const Fileinput: React.FC<FileinputProps> = ({
 
     const clearFiles = () => {
         setFileNames([]);
+        // Reset the input value
+        fileInputRef.current!.value
+            ? fileInputRef.current!.value = ''
+            : fileInputRef.current!.value = '';
+
         if (onChange) onChange({ target: { files: null } } as any);
     };
 
     return (
         <div className={`w-full flex flex-col gap-2 ${mainContainerClass}`}>
             {label && (
-                <label className={clsx("font-medium text-gray-700", labelClassName)}>
+                <label className={clsx("font-medium text-gray-700 dark:text-white", labelClassName)}>
                     {label}
                     {withAsterisk && <span className="text-red-500 ml-1">*</span>}
                 </label>
             )}
             {description && (
-                <p className={clsx("text-xs text-gray-500", descriptionClassName)}>
+                <p className={clsx("text-xs text-gray-500 dark:text-gray-400", descriptionClassName)}>
                     {description}
                 </p>
             )}
@@ -101,7 +106,7 @@ const Fileinput: React.FC<FileinputProps> = ({
                 {/* Visible Text Input */}
                 <div
                     className={clsx(
-                        'w-full cursor-pointer focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-gray-300',
+                        'w-full cursor-pointer focus-visible:!outline-none bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-gray-300 dark:focus:ring-gray-500',
                         sizeStyles[size],
                         radiusStyles[radius],
                         className,
@@ -114,7 +119,7 @@ const Fileinput: React.FC<FileinputProps> = ({
                 {
                     clearable && fileNames.length > 0 && (
                         <IconX
-                            className="absolute right-2 cursor-pointer text-gray-500"
+                            className="absolute top-[10px] right-2 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             onClick={clearFiles}
                         />
                     )
