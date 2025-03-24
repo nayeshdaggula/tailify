@@ -170,7 +170,7 @@ const Select: React.FC<SingleSelectProps> = ({
   const dropdownContent = (
     <div
       style={withPortal ? dropdownStyle : {}}
-      className={`select-dropdowncontainer bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass}
+      className={`select-dropdowncontainer bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass}
         dark:bg-gray-800 dark:border-gray-600
       `}
       ref={dropdownRef}

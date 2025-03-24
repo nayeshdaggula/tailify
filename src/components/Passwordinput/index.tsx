@@ -40,7 +40,7 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
       {label && (
         <label
           className={clsx(
-            "passwordinput-label block text-sm font-bold text-[#000]",
+            "passwordinput-label block text-sm font-bold text-gray-900 dark:text-white",
             labelClassName
           )}
         >
@@ -51,7 +51,7 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
       {description && (
         <p
           className={clsx(
-            "passwordinput-description text-xs text-gray-500",
+            "passwordinput-description text-xs text-gray-500 dark:text-gray-400",
             descriptionClassName
           )}
         >
@@ -63,11 +63,13 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
           {...inputProps}
           type={isPasswordVisible ? "text" : "password"}
           className={clsx(
-            "passwordinput-input w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 pr-10",
+            "passwordinput-input w-full rounded-md border p-2 text-sm shadow-sm transition-all duration-200 outline-none",
             {
-              "border-gray-300 focus:border-blue-500 focus:ring-blue-500": !error,
-              "border-red-500 focus:ring-red-500": !!error,
+              "border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-200 focus:border-blue-500 dark:focus:border-blue-400":
+                !error,
+              "border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:ring-red-400": !!error,
             },
+            "focus:ring focus:ring-opacity-50 focus-visible:ring-0 focus-visible:border-transparent", // Fix for white border
             inputClassName
           )}
           placeholder={placeholder}
@@ -77,7 +79,7 @@ const Passwordinput: React.FC<PasswordInputProps> = ({
         <button
           type="button"
           onClick={togglePasswordVisibility}
-          className="passwordinput-visibletoggle absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+          className="cursor-pointer passwordinput-visibletoggle absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 focus:outline-none"
         >
           {isPasswordVisible ? (
             <IconEye stroke={2} />
