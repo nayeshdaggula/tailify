@@ -1,6 +1,6 @@
 {
   "name": "@nayeshdaggula/tailify",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Tailify is a React component library built with Tailwind CSS.",
   "type": "module",
   "scripts": {
@@ -42,6 +42,7 @@
     "@tabler/icons-react": "^3.31.0",
     "@tailwindcss/postcss": "^4.0.14",
     "@tailwindcss/vite": "^4.0.14",
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "framer-motion": "^12.6.2"
   }
 }
