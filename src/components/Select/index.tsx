@@ -220,7 +220,7 @@ const Select: React.FC<SingleSelectProps> = ({
       ref={inputRef}
     >
       {label && <label className={`select-label block text-sm font-bold text-black ${labelClass}
-        dark:text-gray-200
+        dark:text-gray-200 mb-3
       `}>{label}</label>}
       <div
         onClick={handleToggleDropdown}

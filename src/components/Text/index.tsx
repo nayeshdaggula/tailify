@@ -27,6 +27,7 @@ function Text({
   component = 'p',
   className,
   children,
+  style,
   ...props
 }: TextProps) {
   const baseStyle = 'font-medium';
@@ -40,35 +41,50 @@ function Text({
   };
 
   const colorStyles = {
-    gray: 'text-gray-800',
-    red: 'text-red-800',
-    pink: 'text-pink-800',
-    grape: 'text-grape-800',
-    violet: 'text-violet-800',
-    indigo: 'text-indigo-800',
-    blue: 'text-blue-800',
-    cyan: 'text-cyan-800',
-    teal: 'text-teal-800',
-    green: 'text-green-800',
-    lime: 'text-lime-800',
-    yellow: 'text-yellow-800',
-    amber: 'text-amber-800',
-    orange: 'text-orange-800',
+    gray: 'text-gray-800 dark:text-gray-200',
+    red: 'text-red-800 dark:text-red-400',
+    pink: 'text-pink-800 dark:text-pink-400',
+    grape: 'text-grape-800 dark:text-grape-400',
+    violet: 'text-violet-800 dark:text-violet-400',
+    indigo: 'text-indigo-800 dark:text-indigo-400',
+    blue: 'text-blue-800 dark:text-blue-400',
+    cyan: 'text-cyan-800 dark:text-cyan-400',
+    teal: 'text-teal-800 dark:text-teal-400',
+    green: 'text-green-800 dark:text-green-400',
+    lime: 'text-lime-800 dark:text-lime-400',
+    yellow: 'text-yellow-800 dark:text-yellow-400',
+    amber: 'text-amber-800 dark:text-amber-400',
+    orange: 'text-orange-800 dark:text-orange-400',
   };
 
-  
+  let newColorStyle;
+  let newColorclass;
   if (color.includes('#') || color.includes('rgb')) {
-    colorStyles[color] = 'text-[' + color + ']';
+    newColorStyle = {
+      color: color
+    }
+    newColorclass = '';
+  } else {
+    newColorStyle = {};
+    newColorclass = colorStyles[color];
   }
 
+  let newSizeStyle;
+  let newSizeclass;
   if (size.includes('px') || size.includes('rem')) {
-    sizeStyles[size] = 'text-[' + size + ']';
+    newSizeStyle = {
+      fontSize: size
+    }
+    newSizeclass = '';
+  } else {
+    newSizeStyle = {};
+    newSizeclass = sizeStyles[size];
   }
 
-  const style = clsx(
+  const stylec = clsx(
     baseStyle,
-    sizeStyles[size],
-    colorStyles[color],
+    newColorclass,
+    newSizeclass,
     className
   );
 
@@ -76,12 +92,13 @@ function Text({
 
   return (
     <Component
-      className={style}
+      className={stylec}
       {...props}
+      style={{...newColorStyle, ...newSizeStyle, ...style}}
     >
       {children}
     </Component>
   );
 }
 
-export {Text};
+export { Text };

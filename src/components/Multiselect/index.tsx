@@ -180,14 +180,16 @@ const Multiselect: React.FC<MultiselectProps> = ({
     const dropDownContent = (
         <div
             style={withPortal ? dropdownStyle : {}}
-            className={`multiselect-dropdownconatiner bg-white border rounded-md shadow-lg ${dropdownHeight} overflow-y-auto ${dropdownWidth}`}
+            className={`multiselect-dropdownconatiner bg-white border border-gray-300 rounded-md shadow-lg ${dropdownHeight} overflow-y-auto ${dropdownWidth} dark:bg-gray-800 dark:border-gray-600 dark:shadow-lg dark:ring-1 dark:ring-gray-300 dark:ring-opacity-50`}
             ref={dropdownRef}
         >
             {searchable && (
-                <div className="multiselect-inputwraper  p-2">
+                <div className="multiselect-inputwraper p-2">
                     <input
                         type="text"
-                        className={`multiselect-input focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}`}
+                        className={`multiselect-input focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}
+                            dark:focus-visible:!ring-gray-300 dark:focus-visible:!border-gray-300 dark:focus-visible:!shadow-outline-gray dark:focus-visible:!ring-opacity-50 dark:focus-visible:!border
+                        `}
                         placeholder={dropDownInputPlaceholder}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -195,18 +197,26 @@ const Multiselect: React.FC<MultiselectProps> = ({
                     />
                 </div>
             )}
-            <ul className={`multiselect-dropdownbody ${dropDownListMainClass} max-h-48 overflow-y-auto`}>
+            <ul className={`multiselect-dropdownbody ${dropDownListMainClass} max-h-48 overflow-y-auto
+                dark:bg-gray-800 dark:border-gray-600 dark:ring-1 dark:ring-gray-300 dark:ring-opacity-50 dark:scrollbar-thumb-gray-500 dark:scrollbar-track-gray-700 dark:scrollbar-thumb-rounded-full dark:scrollbar-track-rounded-full
+            `}>
                 {filteredOptions.map((option, index) => (
                     <li
                         key={`multiselect-${option.value}-${index}`}
-                        className={`multiselect-dropdownlist p-2 cursor-pointer hover:bg-gray-100 bg-white ${dropDownListClass}`}
+                        className={`multiselect-dropdownlist p-2 cursor-pointer hover:bg-gray-100 bg-white ${dropDownListClass}
+                            dark:bg-gray-800 dark:hover:bg-gray-700
+                        `}
                         onClick={() => handleSelectOption(option.value)}
                     >
                         {
                             renderOption ?
                                 renderOption(option) :
-                                <div className='multiselect-dropdownlistsingle  text-[14px] flex flex-row justify-between items-center'>
-                                    <span>{option.label}</span>
+                                <div className='multiselect-dropdownlistsingle  text-[14px] flex flex-row justify-between items-center
+                                    dark:text-white dark:text-opacity-80 dark:hover:text-opacity-100 dark:hover:bg-gray-700
+                                '>
+                                    <span
+                                        className='multiselect-dropdownlistsinglelabel dark:text-white dark:text-opacity-80 dark:hover:text-opacity-100'
+                                    >{option.label}</span>
                                     {
                                         selectedOptions.includes(option.value) &&
                                         <IconCheck size="14px" />
@@ -223,13 +233,17 @@ const Multiselect: React.FC<MultiselectProps> = ({
     return (
         <div className={`multiselect-container relative w-full ${containerClass}`} ref={inputRef}>
             {label && (
-                <label className={`multiselect-label block text-sm font-bold text-black ${labelClass}`}>
+                <label className={`multiselect-label block text-sm font-bold text-black ${labelClass} mb-3
+                    dark:text-white
+                `}>
                     {label}
                 </label>
             )}
             <div
                 onClick={handleToggleDropdown}
-                className={`multiselect-option multiselect-label justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 ${disabled
+                className={`multiselect-option multiselect-label justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 
+                    dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:ring-gray-300 dark:focus:ring-opacity-50
+                    ${disabled
                     ? 'bg-gray-100 cursor-not-allowed'
                     : 'bg-white hover:border-blue-500 focus:border-blue-500 focus:ring-blue-500'
                     } ${error ? 'border-red-500' : 'border-gray-300'}`}
@@ -250,14 +264,14 @@ const Multiselect: React.FC<MultiselectProps> = ({
                                         selectedOption && (
                                             <div
                                                 key={value}
-                                                className="multiselect-singlevalue flex items-center px-2 text-black border-black rounded-full border-[1px]"
+                                                className="multiselect-singlevalue flex items-center px-2 text-black border-black rounded-full border-[1px] dark:text-white dark:border-gray-600 dark:bg-gray-700 dark:border-opacity-50 dark:hover:bg-gray-600 dark:hover:border-opacity-80 dark:hover:text-opacity-80 dark:hover:text-opacity-100 dark:hover:border-opacity-100"
                                             >
                                                 <span className="text-[13px]">
                                                     {selectedOption.label}
                                                 </span>
                                                 <button
                                                     onClick={() => handleRemoveSelected(value)}
-                                                    className="multiselect-singlevalueremove ml-2 text-black cursor-pointer"
+                                                    className="multiselect-singlevalueremove ml-2 text-black cursor-pointer dark:text-white dark:hover:text-opacity-80 dark:hover:bg-gray-700 "
                                                 >
                                                     &times;
                                                 </button>
