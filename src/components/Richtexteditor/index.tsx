@@ -1,5 +1,4 @@
-'use client'
-import React, { useRef, ChangeEvent } from 'react'
+import React, { useRef, ChangeEvent, useEffect } from 'react'
 import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -158,6 +157,14 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
             onChange(editor?.getHTML() || '')
         }
     }
+
+    // Sync the content when the `value` prop changes
+    useEffect(() => {
+        if (editor && value !== editor.getHTML()) {
+            editor.commands.setContent(value || '')
+        }
+    }, [value, editor])
+
     editor?.on('update', handleEditorChange)
 
     return (

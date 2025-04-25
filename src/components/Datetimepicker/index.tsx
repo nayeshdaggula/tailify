@@ -195,7 +195,7 @@ const Datetimepicker: React.FC<DateTimePickerProps> = ({
 
 
   const renderTimePicker = () => (
-    <div className='mt-4 mx-auto w-[150px]'>
+    <div className='mt-4 mx-auto w-[200px]'>
     <div className="flex items-center justify-between gap-2">
       <select
         value={hours}
