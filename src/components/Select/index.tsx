@@ -15,8 +15,8 @@ interface SingleSelectProps {
   placeholderClass?: string;
   clearable?: boolean;
   searchable?: boolean;
-  value?: string | null; // Controlled value
-  onChange?: (value: string | null) => void; // onChange callback
+  value?: string | null;
+  onChange?: (value: string | null) => void;
   error?: string;
   mainContainerClass?: string;
   dropDownClass?: string;
@@ -68,6 +68,42 @@ const Select: React.FC<SingleSelectProps> = ({
     }
   }, [withPortal]);
 
+  const positionDropdown = useCallback(() => {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      const dropdownHeight = 200;
+      const bottomSpace = window.innerHeight - rect.bottom;
+
+      let height = inputRef.current.clientHeight + 145;
+      let top = rect.bottom + window.scrollY + 5;
+
+      if (bottomSpace < dropdownHeight) {
+        top = top - height;
+      }
+
+      const isParentModal = inputRef.current.closest('[data-modal="true"]');
+      const isParentDrawer = inputRef.current.closest('[data-drawer="true"]');
+
+      let zIndex = 999;
+
+      if (isParentModal) {
+        const modalStyle = (isParentModal as HTMLElement).style;
+        zIndex = parseInt(modalStyle.zIndex || '999') + 1;
+      } else if (isParentDrawer) {
+        const drawerStyle = (isParentDrawer as HTMLElement).style;
+        zIndex = parseInt(drawerStyle.zIndex || '999') + 1;
+      }
+
+      setDropdownStyle({
+        position: "absolute",
+        top: `${top}px`,
+        left: `${rect.left + window.scrollX}px`,
+        width: `${rect.width}px`,
+        zIndex,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -85,63 +121,30 @@ const Select: React.FC<SingleSelectProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (!withPortal || !isOpen) return;
+
+    const handleScrollOrResize = () => {
+      positionDropdown();
+    };
+
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
+    };
+  }, [isOpen, withPortal, positionDropdown]);
+
   const handleToggleDropdown = useCallback(() => {
-    let newIsOpen = !isOpen;
+    const newIsOpen = !isOpen;
     setIsOpen(newIsOpen);
 
-    if (withPortal) {
-      if (newIsOpen && inputRef.current) {
-        const rect = inputRef.current.getBoundingClientRect();
-        const dropdownHeight = 200; // Approximate dropdown height
-
-        let height = inputRef.current.clientHeight + 145;
-
-        let top = rect.bottom + window.scrollY + 5;
-        let bottomSpace = window.innerHeight - rect.bottom;
-
-        if (bottomSpace < dropdownHeight) {
-          top = top - height;
-        }
-
-        const isParentModal = inputRef.current?.closest('[data-modal="true"]') ? true : false;
-        const isParentDrawer = inputRef.current?.closest('[data-drawer="true"]') ? true : false;
-
-        if (isParentModal === true) {
-          const parentDrawerStyles = (inputRef.current?.closest('[data-modal="true"]') as HTMLElement)?.style;
-          let parentDrawerZIndex = parentDrawerStyles.zIndex;
-          let newParentDrawerZIndex = parentDrawerZIndex ? parseInt(parentDrawerZIndex) : 0;
-
-          setDropdownStyle({
-            position: "absolute",
-            top: `${top}px`,
-            left: `${rect.left + window.scrollX}px`,
-            width: `${rect.width}px`,
-            zIndex: newParentDrawerZIndex + 1,
-          });
-        } else if (isParentDrawer === true) {
-          const parentDrawerStyles = (inputRef.current?.closest('[data-drawer="true"]') as HTMLElement)?.style;
-          let parentDrawerZIndex = parentDrawerStyles.zIndex;
-          let newParentDrawerZIndex = parentDrawerZIndex ? parseInt(parentDrawerZIndex) : 0;
-
-          setDropdownStyle({
-            position: "absolute",
-            top: `${top}px`,
-            left: `${rect.left + window.scrollX}px`,
-            width: `${rect.width}px`,
-            zIndex: newParentDrawerZIndex + 1,
-          });
-        } else {
-          setDropdownStyle({
-            position: "absolute",
-            top: `${top}px`,
-            left: `${rect.left + window.scrollX}px`,
-            width: `${rect.width}px`,
-            zIndex: 999,
-          });
-        }
-      }
+    if (withPortal && newIsOpen) {
+      positionDropdown();
     }
-  }, [isOpen, inputRef, withPortal]);
+  }, [isOpen, withPortal, positionDropdown]);
 
   const handleSelectOption = (value: string) => {
     if (onChange) {
@@ -153,7 +156,7 @@ const Select: React.FC<SingleSelectProps> = ({
   };
 
   const handleClearSelection = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent dropdown from opening when clicking the clear icon
+    e.stopPropagation();
     if (onChange) {
       onChange(null);
     } else {
@@ -219,9 +222,7 @@ const Select: React.FC<SingleSelectProps> = ({
       `}
       ref={inputRef}
     >
-      {label && <label className={`select-label block text-sm font-bold text-black ${labelClass}
-        dark:text-gray-200 mb-3
-      `}>{label}</label>}
+      {label && <label className={`textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200 ${labelClass}`}>{label}</label>}
       <div
         onClick={handleToggleDropdown}
         className={`select-option bg-gray-50 justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${selectWrapperClass}

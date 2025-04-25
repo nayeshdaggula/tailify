@@ -79,9 +79,19 @@ const Fileinput: React.FC<FileinputProps> = ({
     };
 
     return (
-        <div className={`w-full flex flex-col gap-2 ${mainContainerClass}`}>
+        <div
+            className={clsx(
+                "fileinput-wrapper space-y-2",
+                mainContainerClass
+            )}
+        >
             {label && (
-                <label className={clsx("font-medium text-gray-700 dark:text-white", labelClassName)}>
+                <label
+                    className={clsx(
+                        "textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200",
+                        labelClassName
+                    )}
+                >
                     {label}
                     {withAsterisk && <span className="text-red-500 ml-1">*</span>}
                 </label>

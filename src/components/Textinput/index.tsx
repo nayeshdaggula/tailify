@@ -37,7 +37,7 @@ const Textinput: React.FC<TextInputProps> = ({
       {label && (
         <label
           className={clsx(
-            "textinput-label block text-sm font-bold mb-2 text-gray-900 dark:text-gray-200",
+            "textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200",
             labelClassName
           )}
         >

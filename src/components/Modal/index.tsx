@@ -89,7 +89,7 @@ const Modal: React.FC<ModalProps> = ({
 
     return ReactDOM.createPortal(
         <div
-            className={`modal-overlaywrapper fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/70 ${margin} ${overlyClassName}`}
+            className={`modal-overlaywrapper max-h-[calc(100vh - 0px)] overflow-y-auto fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/70 ${margin} ${overlyClassName}`}
             style={{ zIndex }}
             data-modal="true"
         >

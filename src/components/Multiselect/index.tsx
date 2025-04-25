@@ -233,9 +233,7 @@ const Multiselect: React.FC<MultiselectProps> = ({
     return (
         <div className={`multiselect-container relative w-full ${containerClass}`} ref={inputRef}>
             {label && (
-                <label className={`multiselect-label block text-sm font-bold text-black ${labelClass} mb-3
-                    dark:text-white
-                `}>
+                <label className={`textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200 ${labelClass}`}>
                     {label}
                 </label>
             )}

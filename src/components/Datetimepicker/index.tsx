@@ -4,7 +4,7 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import ReactDOM from 'react-dom';
 
-type DatePickerProps = {
+type DateTimePickerProps = {
   label?: string;
   description?: string;
   value?: Date;
@@ -19,7 +19,7 @@ type DatePickerProps = {
   withPortal?: boolean;
 };
 
-const Datepicker: React.FC<DatePickerProps> = ({
+const Datetimepicker: React.FC<DateTimePickerProps> = ({
   label,
   description,
   value,
@@ -42,6 +42,20 @@ const Datepicker: React.FC<DatePickerProps> = ({
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const justOpenedRef = useRef(false);
+
+  const [hours, setHours] = useState(value ? value.getHours() % 12 || 12 : 12);
+  const [minutes, setMinutes] = useState(value ? value.getMinutes() : 0);
+  const [ampm, setAmpm] = useState(value && value.getHours() >= 12 ? 'PM' : 'AM');
+
+
+  useEffect(() => {
+    if (value) {
+      const hr = value.getHours();
+      setHours(hr % 12 || 12);
+      setMinutes(value.getMinutes());
+      setAmpm(hr >= 12 ? 'PM' : 'AM');
+    }
+  }, [value]);
 
   useEffect(() => {
     if (withPortal) {
@@ -141,10 +155,15 @@ const Datepicker: React.FC<DatePickerProps> = ({
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const emptyDays = Array.from({ length: firstDayOfMonth }, (_, i) => i);
 
+
+  // 👇 When date is selected, also include time
   const handleDateSelect = (day: number) => {
-    const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    setSelectedDate(newDate);
-    onChange?.(newDate);
+    const baseDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+    let h = hours % 12;
+    if (ampm === 'PM') h += 12;
+    const finalDate = new Date(baseDate.setHours(h, minutes, 0, 0));
+    setSelectedDate(finalDate);
+    onChange?.(finalDate);
     setIsOpen(false);
   };
 
@@ -173,6 +192,41 @@ const Datepicker: React.FC<DatePickerProps> = ({
     }
     setViewDate(newDate);
   };
+
+
+  const renderTimePicker = () => (
+    <div className='mt-4 mx-auto w-[150px]'>
+    <div className="flex items-center justify-between gap-2">
+      <select
+        value={hours}
+        onChange={(e) => setHours(Number(e.target.value))}
+        className="border rounded-md p-1 text-sm"
+      >
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+          <option key={h} value={h}>{h.toString().padStart(2, '0')}</option>
+        ))}
+      </select>
+      <span>:</span>
+      <select
+        value={minutes}
+        onChange={(e) => setMinutes(Number(e.target.value))}
+        className="border rounded-md p-1 text-sm"
+      >
+        {Array.from({ length: 60 }, (_, i) => i).map((m) => (
+          <option key={m} value={m}>{m.toString().padStart(2, '0')}</option>
+        ))}
+      </select>
+      <select
+        value={ampm}
+        onChange={(e) => setAmpm(e.target.value as 'AM' | 'PM')}
+        className="border rounded-md p-1 text-sm"
+      >
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+    </div>
+  );
 
   const renderHeader = () => (
     <div className="flex justify-between items-center mb-4">
@@ -249,8 +303,8 @@ const Datepicker: React.FC<DatePickerProps> = ({
             className={clsx(
               'p-2 rounded-full cursor-pointer',
               day === selectedDate.getDate() &&
-              selectedDate.getMonth() === currentMonth &&
-              selectedDate.getFullYear() === currentYear
+                selectedDate.getMonth() === currentMonth &&
+                selectedDate.getFullYear() === currentYear
                 ? 'bg-blue-500 text-white'
                 : 'hover:bg-gray-100 text-gray-800'
             )}
@@ -271,11 +325,12 @@ const Datepicker: React.FC<DatePickerProps> = ({
       <div className="p-4">
         {renderHeader()}
         {renderBody()}
+        {renderTimePicker()}
       </div>
     </div>
   );
 
-  const formattedDate = dayjs(selectedDate).format(format);
+  const formattedDate = dayjs(selectedDate).format(`${format} hh:mm A`);
 
   return (
     <div className="space-y-2" ref={inputRef}>
@@ -314,4 +369,4 @@ const Datepicker: React.FC<DatePickerProps> = ({
   );
 };
 
-export { Datepicker };
+export { Datetimepicker };

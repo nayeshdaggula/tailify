@@ -42,11 +42,11 @@ const NumberInput: React.FC<NumberInputProps> = ({
     };
 
     return (
-        <div className="">
+        <div className={clsx("numberinput-wrapper space-y-2")}>
             {label && (
                 <label
                     className={clsx(
-                        "block text-sm font-bold text-[#000] dark:text-white mb-0",
+                        "textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200",
                         labelClassName
                     )}
                 >

@@ -96,7 +96,7 @@ const Pininput: React.FC<PinInputProps> = ({
   return (
     <div className="flex flex-col space-y-2">
       {label && (
-        <label className={clsx("block text-sm font-bold mb-1 text-gray-700 dark:text-gray-200", labelClassName)}>
+        <label className={clsx("textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200", labelClassName)}>
           {label}
         </label>
       )}

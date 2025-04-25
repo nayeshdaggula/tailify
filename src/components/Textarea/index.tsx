@@ -33,7 +33,7 @@ const Textarea: React.FC<TextareaProps> = ({
       {label && (
         <label
           className={clsx(
-            "block text-sm font-bold text-gray-900 dark:text-white",
+            "textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200",
             labelClassName
           )}
         >
