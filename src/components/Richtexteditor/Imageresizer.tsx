@@ -5,7 +5,7 @@ const Imageresizer = Image.extend({
     return {
       ...this.parent?.(),
       style: {
-        default: 'width: 100%; height: auto; cursor: pointer;',
+        default: 'width: 250px; height: auto; cursor: pointer;',
         parseHTML: (element) => {
           const width = element.getAttribute('width');
           return width

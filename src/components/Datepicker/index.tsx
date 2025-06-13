@@ -17,6 +17,8 @@ type DatePickerProps = {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   format?: string;
   withPortal?: boolean;
+  minDate?: Date;
+  maxDate?: Date;
 };
 
 const Datepicker: React.FC<DatePickerProps> = ({
@@ -32,7 +34,12 @@ const Datepicker: React.FC<DatePickerProps> = ({
   inputProps,
   format = 'YYYY-MM-DD',
   withPortal = true,
+  minDate,
+  maxDate
 }) => {
+  const adjustedMinDate = value && minDate && value < minDate ? value : minDate;
+  const adjustedMaxDate = value && maxDate && value > maxDate ? value : maxDate;
+
   const [viewDate, setViewDate] = useState<Date>(value || new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<'date' | 'month' | 'year'>('date');
@@ -42,6 +49,7 @@ const Datepicker: React.FC<DatePickerProps> = ({
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const justOpenedRef = useRef(false);
+
 
   useEffect(() => {
     if (withPortal) {
@@ -141,10 +149,12 @@ const Datepicker: React.FC<DatePickerProps> = ({
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const emptyDays = Array.from({ length: firstDayOfMonth }, (_, i) => i);
 
+
+  // 👇 When date is selected, only use date
   const handleDateSelect = (day: number) => {
-    const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    setSelectedDate(newDate);
-    onChange?.(newDate);
+    const finalDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+    setSelectedDate(finalDate);
+    onChange?.(finalDate);
     setIsOpen(false);
   };
 
@@ -174,42 +184,101 @@ const Datepicker: React.FC<DatePickerProps> = ({
     setViewDate(newDate);
   };
 
-  const renderHeader = () => (
-    <div className="flex justify-between items-center mb-4">
-      <button onClick={() => handleMonthChange('prev')} className="text-gray-600 hover:text-blue-500 cursor-pointer">
-        <IconChevronLeft />
-      </button>
-      <div className="flex gap-2 text-lg font-semibold text-gray-900">
-        <button onClick={() => setMode('month')} className="hover:text-blue-500">
-          {viewDate.toLocaleString('default', { month: 'long' })}
+
+
+  const renderHeader = () => {
+    // Helper to check if a month (0-based) in a year is allowed
+    const isMonthAllowed = (year: number, month: number) => {
+      const start = new Date(year, month, 1);
+      const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+      return (!adjustedMinDate || end >= adjustedMinDate) && (!adjustedMaxDate || start <= adjustedMaxDate);
+    };
+    // Helper to check if a year is allowed
+    const isYearAllowed = (year: number) => {
+      const start = new Date(year, 0, 1);
+      const end = new Date(year, 11, 31, 23, 59, 59, 999);
+      return (!adjustedMinDate || end >= adjustedMinDate) && (!adjustedMaxDate || start <= adjustedMaxDate);
+    };
+    // canGoPrev and canGoNext logic by mode
+    const canGoPrev =
+      mode === 'date'
+        ? isMonthAllowed(currentYear, currentMonth - 1)
+        : mode === 'month'
+          ? isYearAllowed(currentYear - 1)
+          : Array.from({ length: 12 }, (_, i) => currentYear - 12 + i).some(isYearAllowed);
+
+    const canGoNext =
+      mode === 'date'
+        ? isMonthAllowed(currentYear, currentMonth + 1)
+        : mode === 'month'
+          ? isYearAllowed(currentYear + 1)
+          : Array.from({ length: 12 }, (_, i) => currentYear + 1 + i).some(isYearAllowed);
+
+    return (
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={canGoPrev ? () => handleMonthChange('prev') : undefined}
+          className={clsx("text-gray-600", {
+            'hover:text-blue-500 cursor-pointer': canGoPrev,
+            'cursor-not-allowed text-gray-400': !canGoPrev,
+          })}
+        >
+          <IconChevronLeft />
         </button>
-        <button onClick={() => setMode('year')} className="hover:text-blue-500">
-          {currentYear}
+        <div className="flex gap-2 text-lg font-semibold text-gray-900">
+          <button onClick={() => setMode('month')} className="hover:text-blue-500">
+            {viewDate.toLocaleString('default', { month: 'long' })}
+          </button>
+          <button onClick={() => setMode('year')} className="hover:text-blue-500">
+            {currentYear}
+          </button>
+        </div>
+        <button
+          onClick={canGoNext ? () => handleMonthChange('next') : undefined}
+          className={clsx("text-gray-600", {
+            'hover:text-blue-500 cursor-pointer': canGoNext,
+            'cursor-not-allowed text-gray-400': !canGoNext,
+          })}
+        >
+          <IconChevronRight />
         </button>
       </div>
-      <button onClick={() => handleMonthChange('next')} className="text-gray-600 hover:text-blue-500 cursor-pointer">
-        <IconChevronRight />
-      </button>
-    </div>
-  );
+    );
+  };
 
   const renderBody = () => {
     if (mode === 'year') {
       const years = Array.from({ length: 12 }, (_, i) => currentYear - 6 + i);
+
+
+      const currentActiveYearclass = 'bg-blue-500 text-white !hover:bg-blue-500 !hover:text-white';
+      const inactiveYearclass = 'cursor-pointer hover:bg-gray-100 text-gray-800';
+      const YearDisabledclass = 'cursor-not-allowed bg-gray-200 text-gray-400';
+
       return (
         <div className="grid grid-cols-4 gap-2 text-center text-sm">
-          {years.map((year) => (
-            <button
-              key={year}
-              onClick={() => handleYearSelect(year)}
-              className={clsx(
-                'p-2 rounded-md cursor-pointer',
-                year === currentYear ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 text-gray-800'
-              )}
-            >
-              {year}
-            </button>
-          ))}
+          {years.map((year) => {
+            const isYearDisabled = (adjustedMinDate && new Date(year + 1, 0, 0) < adjustedMinDate)
+              || (adjustedMaxDate && new Date(year, 0, 1) > adjustedMaxDate);
+
+
+            const yearClass = isYearDisabled
+              ? YearDisabledclass
+              : year === currentYear
+                ? currentActiveYearclass
+                : inactiveYearclass;
+
+            return (
+              <button
+                key={year}
+                onClick={() => !isYearDisabled && handleYearSelect(year)}
+                disabled={isYearDisabled}
+                className={clsx('p-2 rounded-md text-sm', yearClass)}
+              >
+                {year}
+              </button>
+            );
+          })}
         </div>
       );
     }
@@ -218,23 +287,42 @@ const Datepicker: React.FC<DatePickerProps> = ({
       const months = Array.from({ length: 12 }, (_, i) =>
         new Date(0, i).toLocaleString('default', { month: 'short' })
       );
+
+      const currentActivemonthclass = 'bg-blue-500 text-white !hover:bg-blue-500 !hover:text-white';
+      const inactivemonthclass = 'cursor-pointer hover:bg-gray-100 text-gray-800';
+      const monthDisabledclass = 'cursor-not-allowed bg-gray-200 text-gray-400';
+
       return (
         <div className="grid grid-cols-3 gap-2 text-center text-sm">
-          {months.map((month, i) => (
-            <button
-              key={i}
-              onClick={() => handleMonthSelect(i)}
-              className={clsx(
-                'p-2 rounded-md cursor-pointer',
-                i === currentMonth ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 text-gray-800'
-              )}
-            >
-              {month}
-            </button>
-          ))}
+          {months.map((month, i) => {
+            const isMonthDisabled =
+              (adjustedMinDate && new Date(currentYear, i + 1, 0) < adjustedMinDate) ||
+              (adjustedMaxDate && new Date(currentYear, i, 1) > adjustedMaxDate);
+
+            const monthClass = isMonthDisabled
+              ? monthDisabledclass
+              : i === currentMonth
+                ? currentActivemonthclass
+                : inactivemonthclass;
+
+            return (
+              <button
+                key={i}
+                onClick={() => !isMonthDisabled && handleMonthSelect(i)}
+                disabled={isMonthDisabled}
+                className={clsx('p-2 rounded-md text-sm', monthClass)}
+              >
+                {month}
+              </button>
+            );
+          })}
         </div>
       );
     }
+
+    const currentActiveDateclass = 'bg-blue-500 text-white !hover:bg-blue-500 !hover:text-white';
+    const inactiveDateclass = 'cursor-pointer hover:bg-gray-100 text-gray-800';
+    const DateDisabledclass = 'cursor-not-allowed bg-gray-200 text-gray-400';
 
     return (
       <div className="grid grid-cols-7 gap-1 text-center text-sm">
@@ -242,22 +330,39 @@ const Datepicker: React.FC<DatePickerProps> = ({
           <div key={i} className="text-gray-500 font-medium">{d}</div>
         ))}
         {emptyDays.map((_, i) => <div key={`e-${i}`} />)}
-        {days.map((day) => (
-          <button
-            key={day}
-            onClick={() => handleDateSelect(day)}
-            className={clsx(
-              'p-2 rounded-full cursor-pointer',
-              day === selectedDate.getDate() &&
-              selectedDate.getMonth() === currentMonth &&
-              selectedDate.getFullYear() === currentYear
-                ? 'bg-blue-500 text-white'
-                : 'hover:bg-gray-100 text-gray-800'
-            )}
-          >
-            {day}
-          </button>
-        ))}
+        {days.map((day) => {
+          const date = new Date(currentYear, currentMonth, day);
+          const isBeforeMin = adjustedMinDate && date < new Date(adjustedMinDate.setHours(0, 0, 0, 0));
+          const isAfterMax = adjustedMaxDate && date > new Date(adjustedMaxDate.setHours(23, 59, 59, 999));
+          const isDisabled = isBeforeMin || isAfterMax;
+
+          const isActive =
+            day === selectedDate.getDate() &&
+            selectedDate.getMonth() === currentMonth &&
+            selectedDate.getFullYear() === currentYear;
+
+          const dateClass = isDisabled
+            ? DateDisabledclass
+            : isActive
+              ? currentActiveDateclass
+              : inactiveDateclass;
+
+          return (
+            <button
+              key={day}
+              onClick={() => {
+                if (!isDisabled) handleDateSelect(day);
+              }}
+              disabled={isDisabled}
+              className={clsx(
+                'p-2 rounded-md text-sm',
+                dateClass
+              )}
+            >
+              {day}
+            </button>
+          );
+        })}
       </div>
     );
   };

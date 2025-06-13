@@ -28,6 +28,22 @@ Add data-tailify-theme-variant to html tag.
 ```
 
 
+## Components
+
+When you use Richtexteditor for placeholder use below css code on your project.
+
+```
+.richtexteditor-main .tiptap p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+````
+
+
 ## Contributing
 
 Contributions are welcome! If you have a component you'd like to add or an improvement to suggest, feel free to open a pull request or file an issue on the GitHub repository.

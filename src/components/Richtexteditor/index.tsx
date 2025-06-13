@@ -62,14 +62,20 @@ type RichtexteditorProps = {
     onChange?: (value: string) => void
     value?: string,
     placeholder?: string
-    // minEditorHeight?: string
+    minEditorHeight?: string,
+    maxEditorHeight?: string,
+    mainContainerClass?: string,
+    bodyContainerClass?: string,
 }
 
 const Richtexteditor: React.FC<RichtexteditorProps> = ({
     onChange,
     value,
     placeholder = 'Write Something here',
-    // minEditorHeight = '250px'
+    minEditorHeight = '250px',
+    maxEditorHeight = '350px',
+    mainContainerClass,
+    bodyContainerClass,
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
 
@@ -107,11 +113,7 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
                     }
                 },
             }),
-            StarterKit.configure({
-                heading: {
-                    levels: [1, 2],
-                },
-            }),
+            StarterKit,
             Underline,
             Image.configure({
                 inline: true,
@@ -122,17 +124,22 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
             }),
             Imageresizer,
             Placeholder.configure({
-                placeholder: placeholder,
+                placeholder: placeholder
             }),
         ],
-        content: value || '',
+        content: value,
         editorProps: {
             attributes: {
-                class: `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none`
+                class: `richtexteditor-editor prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none`,
+                style: `min-height:${minEditorHeight}; max-height:${maxEditorHeight}`,
             },
             handleDrop(_view, event, _slice) {
                 const file = event.dataTransfer?.files?.[0]
                 if (file && file.type.startsWith('image/')) {
+                    if (file.size > 1024 * 1024) {
+                        alert("Image size should be less than 1MB");
+                        return true;
+                    }
                     const reader = new FileReader()
                     reader.onload = () => {
                         editor?.chain().focus().setImage({ src: reader.result as string }).run()
@@ -152,6 +159,10 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (file && file.type.startsWith('image/')) {
+            if (file.size > 1024 * 1024) {
+                alert("Image size should be less than 1MB");
+                return;
+            }
             const reader = new FileReader()
             reader.onload = () => {
                 editor?.chain().focus().setImage({ src: reader.result as string }).run()
@@ -166,20 +177,37 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
         }
     }
 
-    // Sync the content when the `value` prop changes
     useEffect(() => {
-        if (editor && value !== editor.getHTML()) {
-            editor.commands.setContent(value || '')
+        if (editor && value && editor.getHTML().trim() === '<p></p>') {
+            editor.commands.setContent(value)
         }
     }, [value, editor])
 
     editor?.on('update', handleEditorChange)
 
     return (
-        <div className="w-full border border-gray-300 rounded-md shadow-sm">
-            <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-            <MenuBar editor={editor} onImageUploadClick={handleImageUploadClick} />
-            <EditorContent editor={editor} className="prose prose-sm p-4 focus:outline-none" />
+        <div className={`richtexteditor-main w-full border border-gray-300 rounded-md shadow-sm ${mainContainerClass}`}>
+            <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+            />
+            <MenuBar
+                editor={editor}
+                onImageUploadClick={handleImageUploadClick}
+            />
+            <EditorContent
+                editor={editor}
+                className={`richtexteditor-body prose prose-sm p-4 focus:outline-none ${bodyContainerClass}`}
+                style={{
+                    minHeight: minEditorHeight,
+                    maxHeight: maxEditorHeight,
+                    overflowX: 'hidden',
+                    overflowY: 'auto'
+                }}
+            />
         </div>
     )
 }
