@@ -178,8 +178,12 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
     }
 
     useEffect(() => {
-        if (editor && value && editor.getHTML().trim() === '<p></p>') {
-            editor.commands.setContent(value)
+        // if (editor && value && editor.getHTML().trim() === '<p></p>') {
+        //     editor.commands.setContent(value)
+        // }
+
+        if (editor && value !== editor.getHTML()) {
+            editor.commands.setContent(value || '')
         }
     }, [value, editor])
 
