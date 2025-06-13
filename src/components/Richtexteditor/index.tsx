@@ -7,6 +7,7 @@ import { IconAlignCenter, IconAlignLeft, IconAlignRight, IconCornerUpLeft, IconC
 import TextAlign from '@tiptap/extension-text-align'
 import Link from '@tiptap/extension-link'
 import Imageresizer from './Imageresizer.tsx'
+import Placeholder from '@tiptap/extension-placeholder'
 
 interface MenuBarProps {
     editor: Editor | null
@@ -59,12 +60,16 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor, onImageUploadClick }) => {
 
 type RichtexteditorProps = {
     onChange?: (value: string) => void
-    value?: string
+    value?: string,
+    placeholder?: string
+    // minEditorHeight?: string
 }
 
 const Richtexteditor: React.FC<RichtexteditorProps> = ({
     onChange,
     value,
+    placeholder = 'Write Something here',
+    // minEditorHeight = '250px'
 }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
 
@@ -115,12 +120,15 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
-            Imageresizer
+            Imageresizer,
+            Placeholder.configure({
+                placeholder: placeholder,
+            }),
         ],
         content: value || '',
         editorProps: {
             attributes: {
-                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none',
+                class: `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none`
             },
             handleDrop(_view, event, _slice) {
                 const file = event.dataTransfer?.files?.[0]
