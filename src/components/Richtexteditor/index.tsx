@@ -127,7 +127,7 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
                 placeholder: placeholder
             }),
         ],
-        content: value,
+        content: value || '',
         editorProps: {
             attributes: {
                 class: `richtexteditor-editor prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none`,
@@ -178,10 +178,6 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
     }
 
     useEffect(() => {
-        // if (editor && value && editor.getHTML().trim() === '<p></p>') {
-        //     editor.commands.setContent(value)
-        // }
-
         if (editor && value !== editor.getHTML()) {
             editor.commands.setContent(value || '')
         }
