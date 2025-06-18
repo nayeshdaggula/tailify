@@ -125,7 +125,7 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
             Imageresizer,
             Placeholder.configure({
                 placeholder: placeholder
-            }),
+            })
         ],
         content: value || '',
         editorProps: {
@@ -179,6 +179,7 @@ const Richtexteditor: React.FC<RichtexteditorProps> = ({
 
     useEffect(() => {
         if (editor && value !== editor.getHTML()) {
+            console.log(value)
             editor.commands.setContent(value || '')
         }
     }, [value, editor])
