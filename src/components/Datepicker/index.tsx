@@ -7,8 +7,8 @@ import ReactDOM from 'react-dom';
 type DatePickerProps = {
   label?: string;
   description?: string;
-  value?: Date;
-  onChange?: (date: Date) => void;
+  value?: Date | null;
+  onChange?: (date: Date | null) => void;
   labelClassName?: string;
   inputClassName?: string;
   descriptionClassName?: string;
@@ -19,12 +19,13 @@ type DatePickerProps = {
   withPortal?: boolean;
   minDate?: Date;
   maxDate?: Date;
+  placeholder?: string;
 };
 
 const Datepicker: React.FC<DatePickerProps> = ({
   label,
   description,
-  value,
+  value = null,
   onChange,
   labelClassName,
   inputClassName,
@@ -35,7 +36,8 @@ const Datepicker: React.FC<DatePickerProps> = ({
   format = 'YYYY-MM-DD',
   withPortal = true,
   minDate,
-  maxDate
+  maxDate,
+  placeholder = 'Select date'
 }) => {
   const adjustedMinDate = value && minDate && value < minDate ? value : minDate;
   const adjustedMaxDate = value && maxDate && value > maxDate ? value : maxDate;
@@ -43,13 +45,12 @@ const Datepicker: React.FC<DatePickerProps> = ({
   const [viewDate, setViewDate] = useState<Date>(value || new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<'date' | 'month' | 'year'>('date');
-  const [selectedDate, setSelectedDate] = useState<Date>(value || new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(value);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const justOpenedRef = useRef(false);
-
 
   useEffect(() => {
     if (withPortal) {
@@ -64,9 +65,9 @@ const Datepicker: React.FC<DatePickerProps> = ({
   }, [withPortal]);
 
   useEffect(() => {
+    setSelectedDate(value);
     if (value) {
       setViewDate(value);
-      setSelectedDate(value);
     }
   }, [value]);
 
@@ -149,8 +150,7 @@ const Datepicker: React.FC<DatePickerProps> = ({
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const emptyDays = Array.from({ length: firstDayOfMonth }, (_, i) => i);
 
-
-  // 👇 When date is selected, only use date
+  // When date is selected, only use date
   const handleDateSelect = (day: number) => {
     const finalDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
     setSelectedDate(finalDate);
@@ -183,8 +183,6 @@ const Datepicker: React.FC<DatePickerProps> = ({
     }
     setViewDate(newDate);
   };
-
-
 
   const renderHeader = () => {
     // Helper to check if a month (0-based) in a year is allowed
@@ -250,7 +248,6 @@ const Datepicker: React.FC<DatePickerProps> = ({
     if (mode === 'year') {
       const years = Array.from({ length: 12 }, (_, i) => currentYear - 6 + i);
 
-
       const currentActiveYearclass = 'bg-blue-500 text-white !hover:bg-blue-500 !hover:text-white';
       const inactiveYearclass = 'cursor-pointer hover:bg-gray-100 text-gray-800';
       const YearDisabledclass = 'cursor-not-allowed bg-gray-200 text-gray-400';
@@ -260,7 +257,6 @@ const Datepicker: React.FC<DatePickerProps> = ({
           {years.map((year) => {
             const isYearDisabled = (adjustedMinDate && new Date(year + 1, 0, 0) < adjustedMinDate)
               || (adjustedMaxDate && new Date(year, 0, 1) > adjustedMaxDate);
-
 
             const yearClass = isYearDisabled
               ? YearDisabledclass
@@ -336,7 +332,7 @@ const Datepicker: React.FC<DatePickerProps> = ({
           const isAfterMax = adjustedMaxDate && date > new Date(adjustedMaxDate.setHours(23, 59, 59, 999));
           const isDisabled = isBeforeMin || isAfterMax;
 
-          const isActive =
+          const isActive = selectedDate &&
             day === selectedDate.getDate() &&
             selectedDate.getMonth() === currentMonth &&
             selectedDate.getFullYear() === currentYear;
@@ -380,7 +376,7 @@ const Datepicker: React.FC<DatePickerProps> = ({
     </div>
   );
 
-  const formattedDate = dayjs(selectedDate).format(format);
+  const formattedDate = selectedDate ? dayjs(selectedDate).format(format) : '';
 
   return (
     <div className="space-y-2" ref={inputRef}>
@@ -399,6 +395,7 @@ const Datepicker: React.FC<DatePickerProps> = ({
           type="text"
           readOnly
           value={formattedDate}
+          placeholder={placeholder}
           onClick={handleOpen}
           className={clsx(
             'w-full rounded-md border p-2 text-sm cursor-pointer',
