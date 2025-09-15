@@ -71,35 +71,89 @@ const Select: React.FC<SingleSelectProps> = ({
   const positionDropdown = useCallback(() => {
     if (inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
-      const dropdownHeight = 200;
+      const defaultDropdownHeight = 200;
       const bottomSpace = window.innerHeight - rect.bottom;
-
-      let height = inputRef.current.clientHeight + 145;
-      let top = rect.bottom + window.scrollY + 5;
-
-      if (bottomSpace < dropdownHeight) {
-        top = top - height;
-      }
 
       const isParentModal = inputRef.current.closest('[data-modal="true"]');
       const isParentDrawer = inputRef.current.closest('[data-drawer="true"]');
 
-      let zIndex = 999;
+      let dropdownHeight = defaultDropdownHeight;
 
-      if (isParentModal) {
-        const modalStyle = (isParentModal as HTMLElement).style;
-        zIndex = parseInt(modalStyle.zIndex || '999') + 1;
-      } else if (isParentDrawer) {
-        const drawerStyle = (isParentDrawer as HTMLElement).style;
-        zIndex = parseInt(drawerStyle.zIndex || '999') + 1;
+      if (isParentModal || isParentDrawer) {
+        const parentContainer = (isParentModal || isParentDrawer) as HTMLElement;
+        const containerRect = parentContainer.getBoundingClientRect();
+        const modalHeight = containerRect.height;
+        
+        // Limit dropdownHeight to modal height minus some margin
+        dropdownHeight = Math.min(defaultDropdownHeight, modalHeight - 40);
+      }
+
+      let zIndex = 999;
+      let scrollX = window.scrollX;
+      let scrollY = window.scrollY;
+
+      if (isParentModal || isParentDrawer) {
+        const parentContainer = (isParentModal || isParentDrawer) as HTMLElement;
+        const containerStyle = window.getComputedStyle(parentContainer);
+
+        if (containerStyle.position === 'fixed' || containerStyle.transform !== 'none') {
+          scrollX = 0;
+          scrollY = 0;
+        }
+
+        let scrollableParent = inputRef.current.parentElement;
+        while (scrollableParent && scrollableParent !== parentContainer) {
+          const style = window.getComputedStyle(scrollableParent);
+          if (
+            style.overflow === 'auto' ||
+            style.overflow === 'scroll' ||
+            style.overflowY === 'auto' ||
+            style.overflowY === 'scroll'
+          ) {
+            break;
+          }
+          scrollableParent = scrollableParent.parentElement;
+        }
+
+        if (isParentModal) {
+          const modalStyle = parentContainer.style;
+          zIndex = parseInt(modalStyle.zIndex || '1000') + 1;
+        } else if (isParentDrawer) {
+          const drawerStyle = parentContainer.style;
+          zIndex = parseInt(drawerStyle.zIndex || '1000') + 1;
+        }
+      }
+
+      let top = rect.bottom + scrollY + 5;
+      if (bottomSpace < dropdownHeight) {
+        top = (rect.top + scrollY) - (dropdownHeight + 5);
+      }
+
+      const minTop = scrollY + 10;
+      if (top < minTop) {
+        top = minTop;
+      }
+
+      let left = rect.left + scrollX;
+      const maxLeft = window.innerWidth - rect.width - 10;
+      if (left > maxLeft) {
+        left = maxLeft;
+      }
+      if (left < 10) {
+        left = 10;
       }
 
       setDropdownStyle({
-        position: "absolute",
+        position: isParentModal || isParentDrawer ? 'fixed' : 'absolute',
         top: `${top}px`,
-        left: `${rect.left + window.scrollX}px`,
+        left: `${left}px`,
         width: `${rect.width}px`,
         zIndex,
+        maxHeight: `${dropdownHeight}px`,
+        overflowY: 'auto',
+        backgroundColor: 'white',
+        border: '1px solid #ccc',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
       });
     }
   }, []);
@@ -173,18 +227,14 @@ const Select: React.FC<SingleSelectProps> = ({
   const dropdownContent = (
     <div
       style={withPortal ? dropdownStyle : {}}
-      className={`select-dropdowncontainer bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass}
-        dark:bg-gray-800 dark:border-gray-600
-      `}
+      className={`select-dropdowncontainer bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ${dropDownClass} dark:bg-gray-800 dark:border-gray-600`}
       ref={dropdownRef}
     >
       {searchable && (
         <div className="select-inputwraper p-2">
           <input
             type="text"
-            className={`select-input focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass}
-              dark:focus-visible:ring-0 dark:focus-visible:border-transparent
-            `}
+            className={`select-input focus-visible:!outline-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-300 focus:border-gray-300 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 ${dropDownInputClass} dark:focus-visible:ring-0 dark:focus-visible:border-transparent`}
             placeholder={dropDownInputPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -197,9 +247,7 @@ const Select: React.FC<SingleSelectProps> = ({
           filteredOptions.map((option, index) => (
             <li
               key={`tailifyselect-${option.value}-${index}`}
-              className={`select-dropdownlistoption ${dropDownListClass} flex text-[14px] flex-row justify-between items-center p-2 cursor-pointer hover:bg-gray-100 bg-white
-                dark:bg-gray-800 dark:hover:bg-gray-700
-              `}
+              className={`select-dropdownlistoption ${dropDownListClass} flex text-[14px] flex-row justify-between items-center p-2 cursor-pointer hover:bg-gray-100 bg-white dark:bg-gray-800 dark:hover:bg-gray-700`}
               onClick={() => handleSelectOption(option.value)}
             >
               {option.label}
@@ -207,9 +255,7 @@ const Select: React.FC<SingleSelectProps> = ({
             </li>
           ))
         ) : (
-          <li className="select-dropdownlistoptionnodata text-gray-500 text-sm p-2
-            dark:text-gray-400
-          ">No options found</li>
+          <li className="select-dropdownlistoptionnodata text-gray-500 text-sm p-2 dark:text-gray-400">No options found</li>
         )}
       </ul>
     </div>
@@ -217,32 +263,22 @@ const Select: React.FC<SingleSelectProps> = ({
 
   return (
     <div
-      className={`select-container relative w-full ${mainContainerClass}
-        dark:text-gray-300
-      `}
+      className={`select-container relative w-full ${mainContainerClass} dark:text-gray-300`}
       ref={inputRef}
     >
       {label && <label className={`textinput-label block text-sm font-bold mb-1 text-gray-900 dark:text-gray-200 ${labelClass}`}>{label}</label>}
       <div
         onClick={handleToggleDropdown}
-        className={`select-option bg-gray-50 justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${selectWrapperClass}
-          dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:focus:border-blue-400 dark:focus:ring-blue-400
-        `}
+        className={`select-option bg-gray-50 justify-between items-center cursor-pointer flex w-full rounded-md border p-2 text-sm text-gray-700 shadow-sm focus:ring focus:ring-opacity-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${selectWrapperClass} dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:focus:border-blue-400 dark:focus:ring-blue-400`}
       >
-        <span className="select-value text-gray-600
-          dark:text-gray-300
-        ">
+        <span className="select-value text-gray-600 dark:text-gray-300">
           {displayValue
             ? data.find((option) => option.value === displayValue)?.label
-            : <p className={`select-placeholder py-[1.3px] ${placeholderClass}
-              dark:text-gray-400
-            `}>{placeholder}</p>}
+            : <p className={`select-placeholder py-[1.3px] ${placeholderClass} dark:text-gray-400`}>{placeholder}</p>}
         </span>
         {clearable && displayValue ? (
-          <IconCircleDashedX onClick={handleClearSelection} size="15px" color="red" 
-            className="select-clearicon cursor-pointer
-              dark:text-red-400
-            "
+          <IconCircleDashedX onClick={handleClearSelection} size="15px" color="red"
+            className="select-clearicon cursor-pointer dark:text-red-400"
           />
         ) : (
           <IconSelector size="15px"
@@ -252,10 +288,7 @@ const Select: React.FC<SingleSelectProps> = ({
           />
         )}
       </div>
-      {error && <p className="select-error text-red-500 text-sm mt-1
-        dark:text-red-400
-      ">{error}</p>}
-
+      {error && <p className="select-error text-red-500 text-sm mt-1 dark:text-red-400">{error}</p>}
       {isOpen && (withPortal && portalRoot ? ReactDOM.createPortal(dropdownContent, portalRoot) : dropdownContent)}
     </div>
   );
